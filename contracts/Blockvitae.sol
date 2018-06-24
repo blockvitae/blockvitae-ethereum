@@ -19,7 +19,7 @@ contract Blockvitae {
     using User for User.UserMain;
 
     // DB
-    DB public dbContract;
+    DB private dbContract;
 
     // owner of the contract
     address public owner;
@@ -476,5 +476,21 @@ contract Blockvitae {
     returns(address) 
     {
         return dbContract.findAddrForUserName(_userName);
+    }
+
+    // @description
+    // Checks if the given username is available or taken
+    //
+    // @param string _userName
+    // username to be checked
+    //
+    // @return bool
+    // true if username is available else false
+    function isUsernameAvailable(string _userName)
+    public
+    view
+    returns(bool)
+    {
+        return dbContract.usernameExists(_userName);
     }
 }

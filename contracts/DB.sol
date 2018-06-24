@@ -279,6 +279,21 @@ contract DB {
     }
 
     // @description
+    // Checks if the given username is available or taken
+    //
+    // @param string _userName
+    // username to be checked
+    //
+    // @return bool
+    // true if username is available else false
+    function usernameExists(string _userName) view public isOwner returns(bool) {
+        if (userNames[_userName] != address(0x0))
+            return false;
+        else
+            return true;
+    }
+
+    // @description
     // creates the existance of the user
     // 
     // @param address _user
