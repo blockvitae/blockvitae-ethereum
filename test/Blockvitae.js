@@ -284,7 +284,7 @@ contract("Blockvitae", (accounts) => {
         let exists = await blockvitae.isUsernameAvailable(userName);
         let exists2 = await blockvitae.isUsernameAvailable(userName2);
 
-        assert.isTrue(exists);
-        assert.isFalse(exists2);
+        assert.isFalse(exists);
+        assert.isTrue(exists2);
     });
 });
