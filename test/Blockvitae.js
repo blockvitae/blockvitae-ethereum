@@ -30,13 +30,15 @@ contract("Blockvitae", (accounts) => {
         // CC0 license image pexels.com
         let imgUrl = "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg";
         let email = "john_doe@gmail.com";
+        let location = "Boston, MA";
 
         // save in contract
        await blockvitae.createUserDetail (
             fullName,
             userName,
             imgUrl,
-            email
+            email,
+            location
         );
 
         // get the values
@@ -47,6 +49,7 @@ contract("Blockvitae", (accounts) => {
         assert(userName, personal[1]);
         assert(imgUrl, personal[2]);
         assert(email, personal[3]);
+        assert(location, personal[4]);
     });
 
     // check for update owner
@@ -65,6 +68,7 @@ contract("Blockvitae", (accounts) => {
 
     // check for user social 
     it("user social accounts added successfully", async () => {
+        let websiteUrl = "https://sidharthmalhotra.in";
         let twitterUrl = "https://twitter.com/johndoe";
         let fbUrl = "https://facebook.com/johndoe";
         let githubUrl = "https://github.com/johndoe";
@@ -75,6 +79,7 @@ contract("Blockvitae", (accounts) => {
 
         // create userSocial
         await blockvitae.createUserSocial(
+            websiteUrl,
             twitterUrl,
             fbUrl,
             githubUrl,
@@ -88,28 +93,30 @@ contract("Blockvitae", (accounts) => {
         let social = await blockvitae.getUserSocial(accounts[0]);
 
         // assert statements
-        assert(twitterUrl, social[0]);
-        assert(fbUrl, social[1]);
-        assert(githubUrl, social[2]);
-        assert.lengthOf(dribbbleUrl, social[3].length);
-        assert(linkedUrl, social[4]);
-        assert.lengthOf(behanceUrl, social[5].length);
-        assert(mediumUrl, social[6]);
+        assert(websiteUrl, social[0]);
+        assert(twitterUrl, social[1]);
+        assert(fbUrl, social[2]);
+        assert(githubUrl, social[3]);
+        assert.lengthOf(dribbbleUrl, social[4].length);
+        assert(linkedUrl, social[5]);
+        assert.lengthOf(behanceUrl, social[6].length);
+        assert(mediumUrl, social[7]);
     });
 
     // check for user projects
     it("user projects added successfully", async () => {
         // projects
         let name = ["Discover", "Blockvitae"];
+        let shortDescription = ["Travellers meet locals", "World's first blockchain resume"];
         let description = ["A web application to connect tourists with locals for city tours",
                             "A blockchain based curriculum viate"];
         let url = ["https://discoverapp.com", "https://blockvitae.com"];
 
         // create project 1
-        await blockvitae.createUserProject(name[0], description[0], url[0]);
+        await blockvitae.createUserProject(name[0], shortDescription[0], description[0], url[0]);
 
         // create project 2
-        await blockvitae.createUserProject(name[1], description[1], url[1]);
+        await blockvitae.createUserProject(name[1],shortDescription[1], description[1], url[1]);
 
         // get projects count 
         let count = await blockvitae.getProjectCount(accounts[0]);
@@ -121,8 +128,9 @@ contract("Blockvitae", (accounts) => {
             
             // assert statements
             assert(name[i], project[i][0]);
-            assert(description[i], project[i][1]);
-            assert(url[i], project[i][2]);
+            assert(shortDescription[i], project[i][1]);
+            assert(description[i], project[i][2]);
+            assert(url[i], project[i][3]);
         }
     });
 
@@ -243,6 +251,7 @@ contract("Blockvitae", (accounts) => {
         // CC0 license image pexels.com
         let imgUrl = "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg";
         let email = "john_doe@gmail.com";
+        let location = "Boston, MA";
 
         // get the values
         let personalOld = await blockvitae.getUserDetail(accounts[0]);
@@ -255,7 +264,8 @@ contract("Blockvitae", (accounts) => {
             fullName,
             userName,
             imgUrl,
-            email
+            email,
+            location
         );
 
         // get the values

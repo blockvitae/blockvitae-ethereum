@@ -17,6 +17,7 @@ library User {
         string userName; // username or url selected by the user
         string imgUrl; // profile image url
         string email; // email address of the user
+        string location; // location of the user
     }
 
     // UserSocial holds all the urls
@@ -97,13 +98,17 @@ library User {
     // @param string _email 
     // email of the user
     //
+    // @param string _location
+    // (City, State) of the User
+    //
     // @return UserDetail
     // UserDetail struct for the given values
     function setUserDetail(
         string _fullName,
         string _userName,
         string _imgUrl,
-        string _email
+        string _email,
+        string _location
     )
     internal
     pure
@@ -114,6 +119,7 @@ library User {
         detail.userName = _userName;
         detail.imgUrl = _imgUrl;
         detail.email = _email;
+        detail.location = _location;
         return detail;
     }
 
