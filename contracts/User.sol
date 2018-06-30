@@ -22,6 +22,7 @@ library User {
     // UserSocial holds all the urls
     // for the social accounts of the user
     struct UserSocial {
+        string websiteUrl; // personal website of user
         string twitterUrl; // twitter handle of user
         string fbUrl; // facebook handle of user
         string githubUrl; // github url
@@ -57,6 +58,7 @@ library User {
     // that the user wants to showcase
     struct UserProject {
         string name; // name of the project
+        string shortDescription; // one line description
         string description; // description of the project
         string url; // url of the project
     }
@@ -118,6 +120,9 @@ library User {
     // @description
     // sets the values of UserSocial struct
     //
+    // @param string _websiteUrl
+    // personal website url
+    //
     // @param string _twitterUrl
     // twitter url of the user
     //
@@ -139,6 +144,7 @@ library User {
     // @return UserSocial
     // UserSocial struct for the given values
     function setUserSocial(
+        string _websiteUrl,
         string _twitterUrl,
         string _fbUrl,
         string _githubUrl,
@@ -153,6 +159,7 @@ library User {
     {
         UserSocial memory social;
         social.twitterUrl = bytes(_twitterUrl).length != 0 ? _twitterUrl : "";
+        social.websiteUrl = bytes(_websiteUrl).length != 0 ? _websiteUrl : "";
         social.fbUrl = bytes(_fbUrl).length != 0 ? _fbUrl : "";
         social.githubUrl = bytes(_githubUrl).length != 0 ? _githubUrl : "";
         social.dribbbleUrl = bytes(_dribbbleUrl).length != 0 ? _dribbbleUrl : "";
@@ -167,6 +174,9 @@ library User {
     //
     // @param string _name
     // name of the project
+    // 
+    // @param string _shortDescription
+    // One line description of the project
     //
     // @param string _description
     // description of the project
@@ -178,6 +188,7 @@ library User {
     // UserProject struct for the given values
     function setUserProject(
         string _name,
+        string _shortDescription,
         string _description,
         string _url
     )
@@ -188,6 +199,7 @@ library User {
         require(bytes(_name).length > 0);
         UserProject memory project;
         project.description = bytes(_description).length != 0 ? _description : "";
+        project.shortDescription = bytes(_shortDescription).length != 0 ? _shortDescription : "";
         project.name = bytes(_name).length != 0 ? _name : "";
         project.url = bytes(_url).length != 0 ? _url : "";
         return project;

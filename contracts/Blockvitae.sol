@@ -102,6 +102,9 @@ contract Blockvitae {
 
     // @description
     // create UserSocial struct and insers in DB
+    // 
+    // @param string _websiteUrl
+    // personal website url
     //
     // @param string _twitterUrl
     // twitter url of the user
@@ -121,6 +124,7 @@ contract Blockvitae {
     // @param string _mediumUrl
     // medium url of the user
     function createUserSocial(
+        string _websiteUrl,
         string _twitterUrl,
         string _fbUrl,
         string _githubUrl,
@@ -135,6 +139,7 @@ contract Blockvitae {
     {
         // create userSocial struct
         User.UserSocial memory social = User.setUserSocial(
+            _websiteUrl,
             _twitterUrl,
             _fbUrl,
             _githubUrl,
@@ -152,7 +157,10 @@ contract Blockvitae {
     // creates UserProject struct and insert in DB
     //
     // @param string _name
-    // name of the project
+    // name of the 
+    //
+    // @param string _shortDescription
+    // One line description of the project
     //
     // @param string _description 
     // description of the project
@@ -161,6 +169,7 @@ contract Blockvitae {
     // url of the project
     function createUserProject(
         string _name,
+        string _shortDescription,
         string _description,
         string _url
     )
@@ -171,6 +180,7 @@ contract Blockvitae {
         // create UserProject struct
         User.UserProject memory project = User.setUserProject(
             _name,
+            _shortDescription,
             _description,
             _url
         );
@@ -358,8 +368,8 @@ contract Blockvitae {
     // @param uint index
     // index of the project to be searched
     //
-    // @return (string, string, string)
-    // name, description and url of the project with given index
+    // @return (string, string, string, string)
+    // name, short description, description and url of the project with given index
     function getUserProject(address _user, uint index)
     public
     view
@@ -367,10 +377,11 @@ contract Blockvitae {
         User.UserProject[] memory projects = dbContract.findUserProject(_user);
 
         string memory name = projects[index].name;
+        string memory shortDescription = projects[index].shortDescription;
         string memory description = projects[index].description;
         string memory url = projects[index].url;
     
-        return (name, description, url);
+        return (name, shortDescription, description, url);
     }
 
     // @description
@@ -446,19 +457,19 @@ contract Blockvitae {
     // address of the user for which UserSocial is 
     // to be searched
     //
-    // @return (string, string, string, string)
+    // @return (string, string, string, string, string, string, string, string)
     // array of strings containing values of 
     // UserSocial struct in the respective order
     function getUserSocial(address _user)  
     public 
     view
-    returns(string, string, string, string, string, string, string) 
+    returns(string, string, string, string, string, string, string, string) 
     {
         // find the user details
         User.UserSocial memory social = dbContract.findUserSocial(_user);
 
         // return
-        return (social.twitterUrl, social.fbUrl, social.githubUrl, social.dribbbleUrl, 
+        return (social.websiteUrl, social.twitterUrl, social.fbUrl, social.githubUrl, social.dribbbleUrl, 
             social.linkedInUrl, social.behanceUrl, social.mediumUrl);
     }
 
