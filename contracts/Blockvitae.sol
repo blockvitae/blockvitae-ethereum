@@ -211,12 +211,16 @@ contract Blockvitae {
     //
     // @param string _description
     // description of the work experience
+    //
+    // @param bool _isWorking
+    // true if user still works here
     function createUserWorkExp(
         string _company,
         string _position,
         string _dateStart,
         string _dateEnd,
-        string _description
+        string _description,
+        bool _isWorking
     )
     public
     addressNotZero
@@ -228,7 +232,8 @@ contract Blockvitae {
             _position,
             _dateStart,
             _dateEnd,
-            _description
+            _description,
+            _isWorking
         );
 
         // insert in to database
@@ -325,13 +330,8 @@ contract Blockvitae {
     returns(string, string, string, string, string) {
         User.UserEducation[] memory education = dbContract.findUserEducation(_user);
 
-        string memory organization = education[index].organization;
-        string memory level = education[index].level;
-        string memory dateStart = education[index].dateStart;
-        string memory dateEnd = education[index].dateEnd;
-        string memory description = education[index].description;
-    
-        return (organization, level, dateStart, dateEnd, description);
+        return (education[index].organization, education[index].level, 
+        education[index].dateStart, education[index].dateEnd, education[index].description);
     }
 
 
@@ -380,13 +380,9 @@ contract Blockvitae {
     view
     returns(string, string, string, string) {
         User.UserProject[] memory projects = dbContract.findUserProject(_user);
-
-        string memory name = projects[index].name;
-        string memory shortDescription = projects[index].shortDescription;
-        string memory description = projects[index].description;
-        string memory url = projects[index].url;
     
-        return (name, shortDescription, description, url);
+        return (projects[index].name, projects[index].shortDescription, 
+        projects[index].description, projects[index].url);
     }
 
     // @description
@@ -413,22 +409,17 @@ contract Blockvitae {
     // @param uint index
     // index of the work exp to be searched
     //
-    // @return (string, string, string, string, string)
+    // @return (string, string, string, string, string, bool
     // company, position, dateStart, dateEnd
     // and description of the work exp with given index
     function getUserWorkExp(address _user, uint index)
     public
     view
-    returns(string, string, string, string, string) {
+    returns(string, string, string, string, string, bool) {
         User.UserWorkExp[] memory work = dbContract.findUserWorkExp(_user);
-
-        string memory company = work[index].company;
-        string memory position = work[index].position;
-        string memory dateStart = work[index].dateStart;
-        string memory dateEnd = work[index].dateEnd;
-        string memory description = work[index].description;
     
-        return (company, position, dateStart, dateEnd, description);
+        return (work[index].company, work[index].position, work[index].dateStart, 
+        work[index].dateEnd, work[index].description, work[index].isWorking);
     }
 
     // @description 

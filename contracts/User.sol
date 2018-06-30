@@ -41,6 +41,7 @@ library User {
         string dateStart; // start date 
         string dateEnd; // end date
         string description; // description of the job role
+        bool isWorking; // true if user still works here
     }
 
     // UserEducation holds information
@@ -229,6 +230,9 @@ library User {
     // @param string _description
     // description of the work experience
     //
+    // @param bool _isWorking
+    // true if user still works here
+    //
     // @return UserWorkExp
     // UserWorkExp struct for the given values
     function setUserWorkExp(
@@ -236,7 +240,8 @@ library User {
         string _position,
         string _dateStart,
         string _dateEnd,
-        string _description
+        string _description,
+        bool _isWorking
     )
     internal
     pure
@@ -249,6 +254,7 @@ library User {
         workExp.dateStart = bytes(_dateStart).length != 0 ? _dateStart : "";
         workExp.dateEnd = bytes(_dateEnd).length != 0 ? _dateEnd : "";
         workExp.description = bytes(_description).length != 0 ? _description : "";
+        workExp.isWorking = _isWorking ? _isWorking : false;
         return workExp;
     }
 

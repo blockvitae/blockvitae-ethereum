@@ -142,7 +142,8 @@ contract("Blockvitae", (accounts) => {
                             "Managed and built marketing teams"];
         let position = ["Backend Engineer", "CMO"];
         let dateStart = ["2016-12-20", "2018-01-01"];
-        let dateEnd = ["2017-08-18", "2018-06-15"];
+        let dateEnd = ["2017-08-18", ""];
+        let isWorking = [false, true]
 
         // create exp 1
         await blockvitae.createUserWorkExp(
@@ -150,7 +151,8 @@ contract("Blockvitae", (accounts) => {
             position[0],
             dateStart[0],
             dateEnd[0],
-            description[0]
+            description[0],
+            isWorking[0]
         );
 
         // create exp 2
@@ -159,7 +161,8 @@ contract("Blockvitae", (accounts) => {
             position[1],
             dateStart[1],
             dateEnd[1],
-            description[1]
+            description[1],
+            isWorking[1]
         );
 
         // get work exp count 
@@ -169,13 +172,18 @@ contract("Blockvitae", (accounts) => {
         for (let i = 0; i < count.toNumber(); i++) {
              // get project 1
             let work = await blockvitae.getUserWorkExp(accounts[0], i);
-            
+        
             // assert statements
             assert(company[i], work[i][0]);
             assert(position[i], work[i][1]);
             assert(dateStart[i], work[i][2]);
-            assert(dateEnd[i], work[i][3]);
+            assert(dateEnd[0], work[0][3]);
             assert(description[i], work[i][4]);
+
+            if (i === 0)
+                assert.isFalse(isWorking[i]);
+            else
+                assert.isTrue(isWorking[i]);
         }
     });
 
