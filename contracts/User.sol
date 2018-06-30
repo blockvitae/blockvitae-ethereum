@@ -70,6 +70,11 @@ library User {
         bytes32[] skills; // skills of the user
     }
 
+    // Introduction of the user
+    struct UserIntroduction {
+        string introduction; // introduction of the user
+    }
+
     // User is struct which holds all
     // the details for a particular user
     // creating a CV on Blockvitae
@@ -80,6 +85,7 @@ library User {
         UserEducation[] education; // education of the user
         UserProject[] projects; // projects of the user
         UserSkill skills; // skills of the user
+        UserIntroduction introduction; // introduction of the user
         bool exists; // true everytime add new new struct
         address owner; // owner of the user profile
     }
@@ -311,5 +317,19 @@ library User {
         UserSkill memory uSkill;
         uSkill.skills = _skills;
         return uSkill;
+    }
+
+    // @description
+    // sets the introduction in UserIntroduction struct
+    //
+    // @param string introduction
+    // a short paragraph of introduction of the user
+    // 
+    // @return UserIntroduction
+    // a UserIntroduction struct with given introduction
+    function setUserIntroduction(string _introduction) internal pure returns(UserIntroduction) {
+        UserIntroduction memory uIntro;
+        uIntro.introduction = _introduction;
+        return uIntro;
     }
 }

@@ -181,6 +181,19 @@ contract DB {
     }
 
     // @description
+    // inserts or updates a new UserIntroduction in the database
+    //
+    // @param User.UserIntroduction _introduction
+    // UserIntroduction struct for the user
+    //
+    // @param address _user
+    // address of the user who's details are to be inserted or updated
+    function insertUserIntroduction(User.UserIntroduction _introduction, address _user) public isOwner {
+        users[_user].introduction = _introduction;
+        persistUser(_user);
+    }
+
+    // @description
     // inserts or updates a new UserEducation in the database
     //
     // @param User.UserEducation _education
@@ -215,6 +228,18 @@ contract DB {
     // UserSkill struct of the user with given address
     function findUserSkill(address _user) view public isOwner returns(User.UserSkill) {
         return users[_user].skills;
+    }
+
+    // @description
+    // finds the UserIntroduction struct values for the given user
+    //
+    // @param address _user
+    // address of the user who's data is to be searched
+    //
+    // @return User.UserIntroduction
+    // UserIntroduction struct of the user with given address
+    function findUserIntroduction(address _user) view public isOwner returns(User.UserIntroduction) {
+        return users[_user].introduction;
     }
 
     // @description

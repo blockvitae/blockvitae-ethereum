@@ -92,17 +92,13 @@ contract Blockvitae {
     public
     addressNotZero
     {
-        // create userDetail struct
-        User.UserDetail memory personal = User.setUserDetail(
+        // insert into the database
+        dbContract.insertUserDetail(User.setUserDetail(
             _fullName,
             _userName,
             _imgUrl,
             _email,
-            _location
-        );
-
-        // insert into the database
-        dbContract.insertUserDetail(personal, msg.sender);
+            _location), msg.sender);
     }
 
     // @description
@@ -142,8 +138,8 @@ contract Blockvitae {
     addressNotZero
     userExists
     {
-        // create userSocial struct
-        User.UserSocial memory social = User.setUserSocial(
+        // insert into the database
+        dbContract.insertUserSocial(User.setUserSocial(
             _websiteUrl,
             _twitterUrl,
             _fbUrl,
@@ -151,11 +147,7 @@ contract Blockvitae {
             _dribbbleUrl,
             _linkedInUrl,
             _behanceUrl,
-            _mediumUrl
-        );
-
-        // insert into the database
-        dbContract.insertUserSocial(social, msg.sender);
+            _mediumUrl), msg.sender);
     }
 
     // @description
@@ -182,16 +174,12 @@ contract Blockvitae {
     addressNotZero
     userExists
     {
-        // create UserProject struct
-        User.UserProject memory project = User.setUserProject(
+        // insert into the database
+        dbContract.insertUserProject(User.setUserProject(
             _name,
             _shortDescription,
             _description,
-            _url
-        );
-
-        // insert into the database
-        dbContract.insertUserProject(project, msg.sender);
+            _url), msg.sender);
     }
 
     // @description
@@ -226,18 +214,14 @@ contract Blockvitae {
     addressNotZero
     userExists
     {
-        // create UserWorkExp struct
-        User.UserWorkExp memory work = User.setUserWorkExp(
+        // insert in to database
+        dbContract.insertUserWorkExp(User.setUserWorkExp(
             _company,
             _position,
             _dateStart,
             _dateEnd,
             _description,
-            _isWorking
-        );
-
-        // insert in to database
-        dbContract.insertUserWorkExp(work, msg.sender);
+            _isWorking), msg.sender);
     }
 
     // @description
@@ -246,11 +230,18 @@ contract Blockvitae {
     // @param bytes32[] _skills
     // array of skills
     function createUserSkill(bytes32[] _skills) public addressNotZero userExists {
-        // create user skill struct
-        User.UserSkill memory skills = User.setUserSkill(_skills);
-
         // insert into DB
-        dbContract.insertUserSkill(skills, msg.sender);
+        dbContract.insertUserSkill(User.setUserSkill(_skills), msg.sender);
+    }
+
+    // @description
+    // creates UserIntroduction struct and inserts in DB
+    //
+    // @param string _introduction
+    // introduction of the user
+    function createUserIntroduction(string _introduction) public addressNotZero userExists {
+        // insert into DB
+        dbContract.insertUserIntroduction(User.setUserIntroduction(_introduction), msg.sender);
     }
 
     // @description
@@ -284,17 +275,13 @@ contract Blockvitae {
     addressNotZero
     userExists
     {
-        // create UserEducation struct
-        User.UserEducation memory education = User.setUserEducation(
+        // insert in the database
+        dbContract.insertUserEducation(User.setUserEducation(
             _organization,
             _level,
             _dateStart,
             _dateEnd,
-            _description
-        );
-
-        // insert in the database
-        dbContract.insertUserEducation(education, msg.sender);
+            _description), msg.sender);
     }
 
     // @description
@@ -342,9 +329,21 @@ contract Blockvitae {
     // address of the user who's data is to be searched
     //
     // @return bytes32[]
-    // bytes32 array of skills of the user with given address
+    // array of skills of the user with given address
     function getUserSkills(address _user) public view returns(bytes32[]) {
         return dbContract.findUserSkill(_user).skills;
+    }
+
+    // @description
+    // gets the string of introduction of the user
+    //
+    // @param address _user
+    // address of the user who's data is to be searched
+    //
+    // @return string
+    // introduction of the user with given address
+    function getUserIntroduction(address _user) public view returns(string) {
+        return dbContract.findUserIntroduction(_user).introduction;
     }
 
     // @description

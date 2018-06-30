@@ -305,4 +305,17 @@ contract("Blockvitae", (accounts) => {
         assert.isFalse(exists);
         assert.isTrue(exists2);
     });
+
+    // add introduction
+    it("introduction added successfully", async () => {
+        let introduction = "This is Blockvitae";
+
+        // Insert to Blockchain
+        await blockvitae.createUserIntroduction(introduction);
+
+        // check introduction
+        let intro = await blockvitae.getUserIntroduction(accounts[0]);
+
+        assert(introduction, intro);
+    });
 });
