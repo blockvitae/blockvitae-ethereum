@@ -31,6 +31,7 @@ contract("Blockvitae", (accounts) => {
         let imgUrl = "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg";
         let email = "john_doe@gmail.com";
         let location = "Boston, MA";
+        let description = "Full Stack Developer";
 
         // save in contract
        await blockvitae.createUserDetail (
@@ -38,7 +39,8 @@ contract("Blockvitae", (accounts) => {
             userName,
             imgUrl,
             email,
-            location
+            location,
+            description
         );
 
         // get the values
@@ -50,6 +52,7 @@ contract("Blockvitae", (accounts) => {
         assert(imgUrl, personal[2]);
         assert(email, personal[3]);
         assert(location, personal[4]);
+        assert(description, personal[5]);
     });
 
     // check for update owner
@@ -260,6 +263,7 @@ contract("Blockvitae", (accounts) => {
         let imgUrl = "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg";
         let email = "john_doe@gmail.com";
         let location = "Boston, MA";
+        let description = "Full Stack Developer";
 
         // get the values
         let personalOld = await blockvitae.getUserDetail(accounts[0]);
@@ -273,7 +277,8 @@ contract("Blockvitae", (accounts) => {
             userName,
             imgUrl,
             email,
-            location
+            location,
+            description
         );
 
         // get the values

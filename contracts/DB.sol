@@ -81,8 +81,8 @@ contract DB {
         // if new requested userName is available
         if (userNames[_personal.userName] == address(0x0)) { 
             // if user exists
-             // and user's old userName is not equal to the new one
-             // string comparison not allowed. Therefore, compare hashes.
+            // and user's old userName is not equal to the new one
+            // string comparison not allowed. Therefore, compare hashes.
             if (users[_user].exists
                 && keccak256(abi.encodePacked(users[_user].personal.userName)) 
                                 != keccak256(abi.encodePacked(_personal.userName))) {

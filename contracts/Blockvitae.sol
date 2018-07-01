@@ -82,12 +82,16 @@ contract Blockvitae {
     //
     // @param string _location
     // (City, State) of the user
+    //
+    // @param string _description
+    // One line descriprion of the user
     function createUserDetail(
         string _fullName,
         string _userName,
         string _imgUrl,
         string _email,
-        string _location
+        string _location,
+        string _description
     )
     public
     addressNotZero
@@ -98,7 +102,8 @@ contract Blockvitae {
             _userName,
             _imgUrl,
             _email,
-            _location), msg.sender);
+            _location,
+            _description), msg.sender);
     }
 
     // @description
@@ -429,19 +434,20 @@ contract Blockvitae {
     // address of the user for which UserDetail is 
     // to be searched
     //
-    // @return (string, string, string, string, string)
+    // @return (string, string, string, string, string, string)
     // array of strings containing values of 
     // UserDetail struct in the respective order
     function getUserDetail(address _user)  
     public 
     view
-    returns(string, string, string, string, string) 
+    returns(string, string, string, string, string, string) 
     {
         // find the user details
         User.UserDetail memory personal = dbContract.findUserDetail(_user);
 
         // return
-        return (personal.fullName, personal.userName, personal.imgUrl, personal.email, personal.location);
+        return (personal.fullName, personal.userName, personal.imgUrl, 
+        personal.email, personal.location, personal.description);
     }
 
     // @description 
