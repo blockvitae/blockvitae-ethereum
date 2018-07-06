@@ -133,15 +133,15 @@ contract("Blockvitae", (accounts) => {
             let project = await blockvitae.getUserProject(accounts[0], i);
             
             // assert statements
-            assert(name[i], project[i][0]);
-            assert(shortDescription[i], project[i][1]);
-            assert(description[i], project[i][2]);
-            assert(url[i], project[i][3]);
+            assert(name[i], project[0]);
+            assert(shortDescription[i], project[1]);
+            assert(description[i], project[2]);
+            assert(url[i], project[3]);
 
             if (i == 0) 
-                assert.isTrue(project[i][4]);
+                assert.isTrue(project[4]);
             else    
-                assert.isFalse(project[i][4]);
+                assert.isFalse(project[4]);
         }
     });
 
@@ -188,19 +188,19 @@ contract("Blockvitae", (accounts) => {
             let work = await blockvitae.getUserWorkExp(accounts[0], i);
         
             // assert statements
-            assert(company[i], work[i][0]);
-            assert(position[i], work[i][1]);
-            assert(dateStart[i], work[i][2]);
-            assert(dateEnd[0], work[0][3]);
-            assert(description[i], work[i][4]);
+            assert(company[i], work[0]);
+            assert(position[i], work[1]);
+            assert(dateStart[i], work[2]);
+            assert(description[i], work[4]);
 
             if (i === 0) {
-                assert.isFalse(work[i][5]);
-                assert.isTrue(work[i][6]);
+                assert.isFalse(work[5]);
+                assert.isTrue(work[6]);
+                assert(dateEnd[i], work[3]);
             }
             else {
-                assert.isTrue(work[i][5]);
-                assert.isFalse(work[i][6]);
+                assert.isTrue(work[5]);
+                assert.isFalse(work[6]);
             }
         }
     });
@@ -265,16 +265,16 @@ contract("Blockvitae", (accounts) => {
             let education = await blockvitae.getUserEducation(accounts[0], i);
         
             // assert statements
-            assert(organization[i], education[i][0]);
-            assert(level[i], education[i][1]);
-            assert(dateStart[i], education[i][2]);
-            assert(dateEnd[i], education[i][3]);
-            assert(description[i], education[i][4]);
+            assert(organization[i], education[0]);
+            assert(level[i], education[1]);
+            assert(dateStart[i], education[2]);
+            assert(dateEnd[i], education[3]);
+            assert(description[i], education[4]);
 
             if (i === 0)
-                assert.isFalse(education[i][5])
+                assert.isFalse(education[5])
             else
-                assert.isTrue(education[i][5])
+                assert.isTrue(education[5])
         }
     });
 
