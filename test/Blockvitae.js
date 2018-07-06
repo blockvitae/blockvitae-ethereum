@@ -114,12 +114,15 @@ contract("Blockvitae", (accounts) => {
         let description = ["A web application to connect tourists with locals for city tours",
                             "A blockchain based curriculum viate"];
         let url = ["https://discoverapp.com", "https://blockvitae.com"];
+        let deleted = [true, false];
 
         // create project 1
-        await blockvitae.createUserProject(name[0], shortDescription[0], description[0], url[0]);
+        await blockvitae.createUserProject(name[0], shortDescription[0], 
+            description[0], url[0], deleted[0]);
 
         // create project 2
-        await blockvitae.createUserProject(name[1],shortDescription[1], description[1], url[1]);
+        await blockvitae.createUserProject(name[1],shortDescription[1], 
+            description[1], url[1], deleted[1]);
 
         // get projects count 
         let count = await blockvitae.getProjectCount(accounts[0]);
@@ -134,6 +137,11 @@ contract("Blockvitae", (accounts) => {
             assert(shortDescription[i], project[i][1]);
             assert(description[i], project[i][2]);
             assert(url[i], project[i][3]);
+
+            if (i == 0) 
+                assert.isTrue(project[i][4]);
+            else    
+                assert.isFalse(project[i][4]);
         }
     });
 
@@ -146,7 +154,8 @@ contract("Blockvitae", (accounts) => {
         let position = ["Backend Engineer", "CMO"];
         let dateStart = ["2016-12-20", "2018-01-01"];
         let dateEnd = ["2017-08-18", ""];
-        let isWorking = [false, true]
+        let isWorking = [false, true];
+        let deleted = [true, false];
 
         // create exp 1
         await blockvitae.createUserWorkExp(
@@ -155,7 +164,8 @@ contract("Blockvitae", (accounts) => {
             dateStart[0],
             dateEnd[0],
             description[0],
-            isWorking[0]
+            isWorking[0],
+            deleted[0]
         );
 
         // create exp 2
@@ -165,7 +175,8 @@ contract("Blockvitae", (accounts) => {
             dateStart[1],
             dateEnd[1],
             description[1],
-            isWorking[1]
+            isWorking[1],
+            deleted[1]
         );
 
         // get work exp count 
@@ -183,10 +194,14 @@ contract("Blockvitae", (accounts) => {
             assert(dateEnd[0], work[0][3]);
             assert(description[i], work[i][4]);
 
-            if (i === 0)
-                assert.isFalse(isWorking[i]);
-            else
-                assert.isTrue(isWorking[i]);
+            if (i === 0) {
+                assert.isFalse(work[i][5]);
+                assert.isTrue(work[i][6]);
+            }
+            else {
+                assert.isTrue(work[i][5]);
+                assert.isFalse(work[i][6]);
+            }
         }
     });
 
@@ -219,6 +234,7 @@ contract("Blockvitae", (accounts) => {
         let level = ["Bachelors of Science", "Master of Science"];
         let dateStart = ["2013-12-20", "2017-01-01"];
         let dateEnd = ["2017-08-18", "2019-06-15"];
+        let deleted = [false, true];
 
         // create edu 1
         await blockvitae.createUserEducation(
@@ -226,7 +242,8 @@ contract("Blockvitae", (accounts) => {
             level[0],
             dateStart[0],
             dateEnd[0],
-            description[0]
+            description[0],
+            deleted[0]
         );
 
         // create edu 2
@@ -235,7 +252,8 @@ contract("Blockvitae", (accounts) => {
             level[1],
             dateStart[1],
             dateEnd[1],
-            description[1]
+            description[1],
+            deleted[1]
         );
 
         // get edu count 
@@ -252,6 +270,11 @@ contract("Blockvitae", (accounts) => {
             assert(dateStart[i], education[i][2]);
             assert(dateEnd[i], education[i][3]);
             assert(description[i], education[i][4]);
+
+            if (i === 0)
+                assert.isFalse(education[i][5])
+            else
+                assert.isTrue(education[i][5])
         }
     });
 

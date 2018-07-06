@@ -71,6 +71,7 @@ contract DB {
 
     // @description
     // inserts or updates a new UserDetail in the database mapping
+    // this function also updates a new username
     //
     // @param User.UserDetail _personal
     // UserDetail struct for the user

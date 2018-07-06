@@ -43,6 +43,7 @@ library User {
         string dateEnd; // end date
         string description; // description of the job role
         bool isWorking; // true if user still works here
+        bool isDeleted; // true if work exp entry is deleted, else false
     }
 
     // UserEducation holds information
@@ -54,6 +55,7 @@ library User {
         string dateStart; // start date
         string dateEnd; // end date 
         string description; // description of the qualification
+        bool isDeleted; // true if the education entry is deleted, else false
     }
 
     // UserProjects holds records all
@@ -64,6 +66,7 @@ library User {
         string shortDescription; // one line description
         string description; // description of the project
         string url; // url of the project
+        bool isDeleted; // true if the project entry is deleted, else false
     }
 
     // Skills of the user
@@ -203,13 +206,17 @@ library User {
     // @param string _url
     // url of the project
     //
+    // @param bool _isDeleted
+    // true if the current record has been deleted by the user
+    //
     // @return UserProject
     // UserProject struct for the given values
     function setUserProject(
         string _name,
         string _shortDescription,
         string _description,
-        string _url
+        string _url,
+        bool _isDeleted
     )
     internal
     pure
@@ -221,6 +228,7 @@ library User {
         project.shortDescription = bytes(_shortDescription).length != 0 ? _shortDescription : "";
         project.name = bytes(_name).length != 0 ? _name : "";
         project.url = bytes(_url).length != 0 ? _url : "";
+        project.isDeleted = _isDeleted ? true : false;
         return project;
     }
 
@@ -245,6 +253,9 @@ library User {
     // @param bool _isWorking
     // true if user still works here
     //
+    // @param bool _isDeleted
+    // true if the current record has been deleted by the user
+    //
     // @return UserWorkExp
     // UserWorkExp struct for the given values
     function setUserWorkExp(
@@ -253,7 +264,8 @@ library User {
         string _dateStart,
         string _dateEnd,
         string _description,
-        bool _isWorking
+        bool _isWorking,
+        bool _isDeleted
     )
     internal
     pure
@@ -266,7 +278,8 @@ library User {
         workExp.dateStart = bytes(_dateStart).length != 0 ? _dateStart : "";
         workExp.dateEnd = bytes(_dateEnd).length != 0 ? _dateEnd : "";
         workExp.description = bytes(_description).length != 0 ? _description : "";
-        workExp.isWorking = _isWorking ? _isWorking : false;
+        workExp.isWorking = _isWorking ? true : false;
+        workExp.isDeleted = _isDeleted ? true : false;
         return workExp;
     }
 
@@ -275,19 +288,22 @@ library User {
     //
     // @param string _organization
     // name of the organization
-    
+    //
     // @param string _level
     // education level held in the given organization
-    
+    //
     // @param string _dateStart
     // start date of the education
-    
+    //
     // @param string _dateEnd
     // end date of the education
-    
+    //
     // @param string _description
     // description of the education
-    
+    //
+    // @param bool _isDeleted
+    // true if the current record has been deleted by the user
+    //
     // @return UserEducation
     // UserEducation struct for the given values
     function setUserEducation(
@@ -295,7 +311,8 @@ library User {
         string _level,
         string _dateStart,
         string _dateEnd,
-        string _description
+        string _description,
+        bool _isDeleted
     )
     internal
     pure
@@ -308,6 +325,7 @@ library User {
         education.dateStart = bytes(_dateStart).length != 0 ? _dateStart : "";
         education.dateEnd = bytes(_dateEnd).length != 0 ? _dateEnd : "";
         education.description = bytes(_description).length != 0 ? _description : "";
+        education.isDeleted = _isDeleted ? true : false;
         return education;
     }
 
