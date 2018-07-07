@@ -407,6 +407,20 @@ contract Blockvitae {
     }
 
     // @description
+    // deletes the project for the given index and address
+    //
+    // @param uint _index
+    // index of the project to be deleted
+    function deleteUserProject(uint _index)
+    public
+    addressNotZero
+    userExists
+    {
+        dbContract.deleteProject(_index, msg.sender);
+    }
+
+
+    // @description
     // gets count of total work experiences added
     //
     // @param address _user

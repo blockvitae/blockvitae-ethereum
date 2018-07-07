@@ -256,6 +256,18 @@ contract DB {
     }
 
     // @description
+    // deletes the project for the given index and address
+    //
+    // @param uint _index
+    // index of the project to be deleted
+    //
+    // @param address _user
+    // address of the user whose project is to be deleted
+    function deleteProject(uint _index, address _user) public isOwner {
+        users[_user].projects[_index].isDeleted = true;
+    }
+
+    // @description
     // finds the UserDetail struct values for the given user
     //
     // @param address _user
