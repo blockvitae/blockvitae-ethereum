@@ -219,6 +219,19 @@ contract("Blockvitae", (accounts) => {
         }
     });
 
+    // delete work exp
+    it("work experience deleted successfully", async () => {
+        let workExpBeforeDelete = await blockvitae.getUserWorkExp(accounts[0], 1);
+
+        // delete work exp
+        await blockvitae.deleteUserWorkExp(1);
+
+        let workExpAfterDelete = await blockvitae.getUserWorkExp(accounts[0], 1);
+
+        assert.isFalse(workExpBeforeDelete[6]);
+        assert.isTrue(workExpAfterDelete[6]);
+    });
+
     // check for user skills
     it("user skills added successfully", async () => {
         let skills = ["Php", "ETH Smart Contracts", "MySQL", 
