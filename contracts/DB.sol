@@ -220,6 +220,18 @@ contract DB {
     }
 
     // @description
+    // deletes the education for the given index and address
+    //
+    // @param uint _index
+    // index of the education to be deleted
+    //
+    // @param address _user
+    // address of the user whose project is to be deleted
+    function deleteEducation(uint _index, address _user) public isOwner {
+        users[_user].education[_index].isDeleted = true;
+    }
+
+    // @description
     // finds the UserSkill struct values for the given user
     //
     // @param address _user
@@ -256,6 +268,18 @@ contract DB {
     }
 
     // @description
+    // deletes the project for the given index and address
+    //
+    // @param uint _index
+    // index of the project to be deleted
+    //
+    // @param address _user
+    // address of the user whose project is to be deleted
+    function deleteProject(uint _index, address _user) public isOwner {
+        users[_user].projects[_index].isDeleted = true;
+    }
+
+    // @description
     // finds the UserDetail struct values for the given user
     //
     // @param address _user
@@ -289,6 +313,18 @@ contract DB {
     // UserWorkExp struct of the user with given address
     function findUserWorkExp(address _user) view public isOwner returns(User.UserWorkExp[]) {
         return users[_user].work;
+    }
+
+    // @description
+    // deletes the work experience for the given index and address
+    //
+    // @param uint _index
+    // index of the workexp to be deleted
+    //
+    // @param address _user
+    // address of the user whose project is to be deleted
+    function deleteWorkExp(uint _index, address _user) public isOwner {
+        users[_user].work[_index].isDeleted = true;
     }
 
     // @description

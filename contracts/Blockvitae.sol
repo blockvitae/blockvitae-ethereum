@@ -342,6 +342,18 @@ contract Blockvitae {
         education[index].description, education[index].isDeleted);
     }
 
+    // @description
+    // deletes the education for the given index and address
+    //
+    // @param uint _index
+    // index of the education to be deleted
+    function deleteUserEducation(uint _index)
+    public
+    addressNotZero
+    userExists
+    {
+        dbContract.deleteEducation(_index, msg.sender);
+    }
 
     // @description
     // gets the array of skills of the user
@@ -407,6 +419,20 @@ contract Blockvitae {
     }
 
     // @description
+    // deletes the project for the given index and address
+    //
+    // @param uint _index
+    // index of the project to be deleted
+    function deleteUserProject(uint _index)
+    public
+    addressNotZero
+    userExists
+    {
+        dbContract.deleteProject(_index, msg.sender);
+    }
+
+
+    // @description
     // gets count of total work experiences added
     //
     // @param address _user
@@ -442,6 +468,19 @@ contract Blockvitae {
         return (work[index].company, work[index].position, work[index].dateStart, 
         work[index].dateEnd, work[index].description, 
         work[index].isWorking, work[index].isDeleted);
+    }
+
+    // @description
+    // deletes the workexp for the given index and address
+    //
+    // @param uint _index
+    // index of the workexp to be deleted
+    function deleteUserWorkExp(uint _index)
+    public
+    addressNotZero
+    userExists
+    {
+        dbContract.deleteWorkExp(_index, msg.sender);
     }
 
     // @description 

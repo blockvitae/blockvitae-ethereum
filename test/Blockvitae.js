@@ -145,6 +145,20 @@ contract("Blockvitae", (accounts) => {
         }
     });
 
+    // project deleted
+    it("project deleted successfully", async () => {
+        
+        let projectBeforeDelete = await blockvitae.getUserProject(accounts[0], 1);
+        
+        // delete second project
+        await blockvitae.deleteUserProject(1);
+
+        let projectAfterDelete = await blockvitae.getUserProject(accounts[0], 1);
+
+        assert.isFalse(projectBeforeDelete[4]);
+        assert.isTrue(projectAfterDelete[4]);
+    });
+
     // check for user work exp
     it("user work experience added successfully", async () => {
         // work exp
@@ -203,6 +217,19 @@ contract("Blockvitae", (accounts) => {
                 assert.isFalse(work[6]);
             }
         }
+    });
+
+    // delete work exp
+    it("work experience deleted successfully", async () => {
+        let workExpBeforeDelete = await blockvitae.getUserWorkExp(accounts[0], 1);
+
+        // delete work exp
+        await blockvitae.deleteUserWorkExp(1);
+
+        let workExpAfterDelete = await blockvitae.getUserWorkExp(accounts[0], 1);
+
+        assert.isFalse(workExpBeforeDelete[6]);
+        assert.isTrue(workExpAfterDelete[6]);
     });
 
     // check for user skills
@@ -277,6 +304,20 @@ contract("Blockvitae", (accounts) => {
                 assert.isTrue(education[5])
         }
     });
+
+      // delete work exp
+      it("education deleted successfully", async () => {
+        let educationBeforeDelete = await blockvitae.getUserEducation(accounts[0], 0);
+
+        // delete work exp
+        await blockvitae.deleteUserEducation(0);
+
+        let educationAfterDelete = await blockvitae.getUserEducation(accounts[0], 0);
+
+        assert.isFalse(educationBeforeDelete[5]);
+        assert.isTrue(educationAfterDelete[5]);
+    });
+
 
     // username updated successfully
     it("username updated successfully", async () => {
