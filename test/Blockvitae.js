@@ -305,6 +305,20 @@ contract("Blockvitae", (accounts) => {
         }
     });
 
+      // delete work exp
+      it("education deleted successfully", async () => {
+        let educationBeforeDelete = await blockvitae.getUserEducation(accounts[0], 0);
+
+        // delete work exp
+        await blockvitae.deleteUserEducation(0);
+
+        let educationAfterDelete = await blockvitae.getUserEducation(accounts[0], 0);
+
+        assert.isFalse(educationBeforeDelete[5]);
+        assert.isTrue(educationAfterDelete[5]);
+    });
+
+
     // username updated successfully
     it("username updated successfully", async () => {
         let fullName = "John";
