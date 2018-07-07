@@ -304,6 +304,18 @@ contract DB {
     }
 
     // @description
+    // deletes the work experience for the given index and address
+    //
+    // @param uint _index
+    // index of the workexp to be deleted
+    //
+    // @param address _user
+    // address of the user whose project is to be deleted
+    function deleteWorkExp(uint _index, address _user) public isOwner {
+        users[_user].work[_index].isDeleted = true;
+    }
+
+    // @description
     // finds the address the given userName
     //
     // @param string _userName

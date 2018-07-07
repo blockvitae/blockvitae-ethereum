@@ -458,6 +458,19 @@ contract Blockvitae {
         work[index].isWorking, work[index].isDeleted);
     }
 
+    // @description
+    // deletes the workexp for the given index and address
+    //
+    // @param uint _index
+    // index of the workexp to be deleted
+    function deleteUserWorkExp(uint _index)
+    public
+    addressNotZero
+    userExists
+    {
+        dbContract.deleteWorkExp(_index, msg.sender);
+    }
+
     // @description 
     // returns UserDetail struct values
     // for the given address if user exists
