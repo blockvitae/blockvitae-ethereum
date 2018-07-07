@@ -325,21 +325,21 @@ contract Blockvitae {
     // @param address _user
     // address of the user who's education is to be searched
     //
-    // @param uint index
+    // @param uint _index
     // index of the education to be searched
     //
     // @return (string, string, string, string, string, bool)
     // organization, level, dateStart, dateEnd
     // and description of the education with given index
-    function getUserEducation(address _user, uint index)
+    function getUserEducation(address _user, uint _index)
     public
     view
     returns(string, string, string, string, string, bool) {
         User.UserEducation[] memory education = dbContract.findUserEducation(_user);
 
-        return (education[index].organization, education[index].level, 
-        education[index].dateStart, education[index].dateEnd, 
-        education[index].description, education[index].isDeleted);
+        return (education[_index].organization, education[_index].level, 
+        education[_index].dateStart, education[_index].dateEnd, 
+        education[_index].description, education[_index].isDeleted);
     }
 
     // @description
@@ -402,20 +402,20 @@ contract Blockvitae {
     // @param address _user
     // address of the user who's projects are to be searched
     //
-    // @param uint index
+    // @param uint _index
     // index of the project to be searched
     //
     // @return (string, string, string, string, bool)
     // name, short description, description and url of the project with given index
-    function getUserProject(address _user, uint index)
+    function getUserProject(address _user, uint _index)
     public
     view
     returns(string, string, string, string, bool) {
         User.UserProject[] memory projects = dbContract.findUserProject(_user);
     
-        return (projects[index].name, projects[index].shortDescription, 
-        projects[index].description, projects[index].url,
-        projects[index].isDeleted);
+        return (projects[_index].name, projects[_index].shortDescription, 
+        projects[_index].description, projects[_index].url,
+        projects[_index].isDeleted);
     }
 
     // @description
@@ -453,21 +453,21 @@ contract Blockvitae {
     // @param address _user
     // address of the user who's work exp are to be searched
     //
-    // @param uint index
+    // @param uint _index
     // index of the work exp to be searched
     //
     // @return (string, string, string, string, string, bool, bool)
     // company, position, dateStart, dateEnd
     // and description of the work exp with given index
-    function getUserWorkExp(address _user, uint index)
+    function getUserWorkExp(address _user, uint _index)
     public
     view
     returns(string, string, string, string, string, bool, bool) {
         User.UserWorkExp[] memory work = dbContract.findUserWorkExp(_user);
     
-        return (work[index].company, work[index].position, work[index].dateStart, 
-        work[index].dateEnd, work[index].description, 
-        work[index].isWorking, work[index].isDeleted);
+        return (work[_index].company, work[_index].position, work[_index].dateStart, 
+        work[_index].dateEnd, work[_index].description, 
+        work[_index].isWorking, work[_index].isDeleted);
     }
 
     // @description
