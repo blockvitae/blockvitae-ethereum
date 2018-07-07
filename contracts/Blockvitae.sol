@@ -342,6 +342,18 @@ contract Blockvitae {
         education[index].description, education[index].isDeleted);
     }
 
+    // @description
+    // deletes the education for the given index and address
+    //
+    // @param uint _index
+    // index of the education to be deleted
+    function deleteUserEducation(uint _index)
+    public
+    addressNotZero
+    userExists
+    {
+        dbContract.deleteEducation(_index, msg.sender);
+    }
 
     // @description
     // gets the array of skills of the user

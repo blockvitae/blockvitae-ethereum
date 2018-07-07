@@ -220,6 +220,18 @@ contract DB {
     }
 
     // @description
+    // deletes the education for the given index and address
+    //
+    // @param uint _index
+    // index of the education to be deleted
+    //
+    // @param address _user
+    // address of the user whose project is to be deleted
+    function deleteEducation(uint _index, address _user) public isOwner {
+        users[_user].education[_index].isDeleted = true;
+    }
+
+    // @description
     // finds the UserSkill struct values for the given user
     //
     // @param address _user
