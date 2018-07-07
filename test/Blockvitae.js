@@ -145,6 +145,20 @@ contract("Blockvitae", (accounts) => {
         }
     });
 
+    // project deleted
+    it("project deleted successfully", async () => {
+        
+        let projectBeforeDelete = await blockvitae.getUserProject(accounts[0], 1);
+        
+        // delete second project
+        await blockvitae.deleteUserProject(1);
+
+        let projectAfterDelete = await blockvitae.getUserProject(accounts[0], 1);
+
+        assert.isFalse(projectBeforeDelete[4]);
+        assert.isTrue(projectAfterDelete[4]);
+    });
+
     // check for user work exp
     it("user work experience added successfully", async () => {
         // work exp
