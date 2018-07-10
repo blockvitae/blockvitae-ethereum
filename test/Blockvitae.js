@@ -41,6 +41,9 @@ contract("Blockvitae", (accounts) => {
         let location = "Boston, MA";
         let description = "Full Stack Developer";
 
+        // whitelist user
+        await blockvitae.addToWhitelist(accounts[0]);
+
         // save in contract
         await blockvitae.createUserDetail(
             fullName,
