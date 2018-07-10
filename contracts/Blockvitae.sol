@@ -79,6 +79,16 @@ contract Blockvitae {
     }
 
     // @description
+    // If Blockvitae is updated then the new Blockvitae contract
+    // can be the owner of the DB contract to access old data
+    //
+    // @param address _owner
+    // address of the new owner 
+    function setDBOwner(address _owner) public isOwner {
+        dbContract.setOwner(_owner);
+    }
+
+    // @description
     // add user to whitelist so that the given user can create account
     //
     // @param address _user
