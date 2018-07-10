@@ -24,15 +24,21 @@ contract Blockvitae {
     // owner of the contract
     address public owner;
 
+    // if user is whitelisted to create account
+    mapping(address => bool) public whitelist;
+
+    // if anyone is allowed to create account
+    bool public allWhitelisted;
+
     // checks if the user has an account or not
     modifier userExists() {
-        require (dbContract.isExists(msg.sender));
+        require(dbContract.isExists(msg.sender));
         _;
     }
 
     // checks if the address is not zero
     modifier addressNotZero() {
-        require (msg.sender != address(0));
+        require(msg.sender != address(0));
         _;
     }
 
@@ -42,10 +48,17 @@ contract Blockvitae {
         _;
     }
 
+    // if user is whitelisted to create account
+    modifier isWhitelisted() {
+        require(whitelist[msg.sender] || allWhitelisted);
+        _;
+    }
+
     // sets the owner of the contract
     constructor(DB _dbContract) public {
         dbContract = _dbContract;
         owner = msg.sender;
+        allWhitelisted = false;
 
         // set this contract as the owner of DB contract
         // to avoid any external calls to DB contract
@@ -63,6 +76,21 @@ contract Blockvitae {
     // address of the new owner 
     function setOwner(address _owner) public isOwner {
         owner = _owner;
+    }
+
+    // @description
+    // add user to whitelist so that the given user can create account
+    //
+    // @param address _user
+    // address of the user
+    function addToWhitelist(address _user) public isOwner {
+        whitelist[_user] = true;
+    }
+
+    // @description
+    // anyone can create account
+    function setAllWhitelisted() public isOwner {
+        allWhitelisted = true;
     }
 
     // @description
@@ -95,6 +123,7 @@ contract Blockvitae {
     )
     public
     addressNotZero
+    isWhitelisted
     {
         // insert into the database
         dbContract.insertUserDetail(User.setUserDetail(
