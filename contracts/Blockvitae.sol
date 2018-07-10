@@ -562,4 +562,13 @@ contract Blockvitae {
     {
         return dbContract.usernameExists(_userName);
     }
+
+    // @description
+    // gets the total number of users registered so far
+    //
+    // @return uint
+    // count of users registered so far
+    function getTotalUsers() public view isOwner returns(uint) {
+        return dbContract.totalUsers();
+    }
 }
