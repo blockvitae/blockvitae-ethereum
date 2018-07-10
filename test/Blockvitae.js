@@ -23,6 +23,14 @@ contract("Blockvitae", (accounts) => {
         assert.equal(owner, accounts[0]);
     });
 
+    // check for totalUsers
+    it("totalUser before user creation", async () => {
+        // get total users
+        let totalUsers = await blockvitae.getTotalUsers();
+
+        assert.strictEqual(totalUsers.toNumber(), 0);
+    })
+
     // check if user gets created
     it("user created successfully", async () => {
         let fullName = "John";
@@ -33,8 +41,11 @@ contract("Blockvitae", (accounts) => {
         let location = "Boston, MA";
         let description = "Full Stack Developer";
 
+        // whitelist user
+        await blockvitae.addToWhitelist(accounts[0]);
+
         // save in contract
-       await blockvitae.createUserDetail (
+        await blockvitae.createUserDetail(
             fullName,
             userName,
             imgUrl,
@@ -54,6 +65,14 @@ contract("Blockvitae", (accounts) => {
         assert(location, personal[4]);
         assert(description, personal[5]);
     });
+
+    // check for totalUsers
+    it("totalUser updated successfully", async () => {
+        // get total users
+        let totalUsers = await blockvitae.getTotalUsers();
+
+        assert.strictEqual(totalUsers.toNumber(), 1);
+    })
 
     // check for update owner
     it("owner updated successfully", async () => {
@@ -112,16 +131,16 @@ contract("Blockvitae", (accounts) => {
         let name = ["Discover", "Blockvitae"];
         let shortDescription = ["Travellers meet locals", "World's first blockchain resume"];
         let description = ["A web application to connect tourists with locals for city tours",
-                            "A blockchain based curriculum viate"];
+            "A blockchain based curriculum viate"];
         let url = ["https://discoverapp.com", "https://blockvitae.com"];
         let deleted = [true, false];
 
         // create project 1
-        await blockvitae.createUserProject(name[0], shortDescription[0], 
+        await blockvitae.createUserProject(name[0], shortDescription[0],
             description[0], url[0], deleted[0]);
 
         // create project 2
-        await blockvitae.createUserProject(name[1],shortDescription[1], 
+        await blockvitae.createUserProject(name[1], shortDescription[1],
             description[1], url[1], deleted[1]);
 
         // get projects count 
@@ -129,27 +148,27 @@ contract("Blockvitae", (accounts) => {
 
         // get project details for each project index
         for (let i = 0; i < count.toNumber(); i++) {
-             // get project 1
+            // get project 1
             let project = await blockvitae.getUserProject(accounts[0], i);
-            
+
             // assert statements
             assert(name[i], project[0]);
             assert(shortDescription[i], project[1]);
             assert(description[i], project[2]);
             assert(url[i], project[3]);
 
-            if (i == 0) 
+            if (i == 0)
                 assert.isTrue(project[4]);
-            else    
+            else
                 assert.isFalse(project[4]);
         }
     });
 
     // project deleted
     it("project deleted successfully", async () => {
-        
+
         let projectBeforeDelete = await blockvitae.getUserProject(accounts[0], 1);
-        
+
         // delete second project
         await blockvitae.deleteUserProject(1);
 
@@ -163,8 +182,8 @@ contract("Blockvitae", (accounts) => {
     it("user work experience added successfully", async () => {
         // work exp
         let company = ["Statusbrew", "Web Bakerz"];
-        let description = ["Work with a dedicated team of 25 members from 5 different nations", 
-                            "Managed and built marketing teams"];
+        let description = ["Work with a dedicated team of 25 members from 5 different nations",
+            "Managed and built marketing teams"];
         let position = ["Backend Engineer", "CMO"];
         let dateStart = ["2016-12-20", "2018-01-01"];
         let dateEnd = ["2017-08-18", ""];
@@ -198,9 +217,9 @@ contract("Blockvitae", (accounts) => {
 
         // get work exp details for each index
         for (let i = 0; i < count.toNumber(); i++) {
-             // get project 1
+            // get project 1
             let work = await blockvitae.getUserWorkExp(accounts[0], i);
-        
+
             // assert statements
             assert(company[i], work[0]);
             assert(position[i], work[1]);
@@ -234,7 +253,7 @@ contract("Blockvitae", (accounts) => {
 
     // check for user skills
     it("user skills added successfully", async () => {
-        let skills = ["Php", "ETH Smart Contracts", "MySQL", 
+        let skills = ["Php", "ETH Smart Contracts", "MySQL",
             "Leadership", "Truffle", "Go", "Java Spring Boot"];
 
         // insert skills
@@ -242,7 +261,7 @@ contract("Blockvitae", (accounts) => {
 
         // retrieve skills
         let savedSkills = await blockvitae.getUserSkills(accounts[0]);
-        
+
         // convert bytes to Utf8
         savedSkills = savedSkills.map(skill => web3.toUtf8(skill));
 
@@ -252,12 +271,12 @@ contract("Blockvitae", (accounts) => {
         }
     });
 
-     // check for user education
-     it("user education added successfully", async () => {
+    // check for user education
+    it("user education added successfully", async () => {
         // education
         let organization = ["Northeastern University", "NYU"];
-        let description = ["Head of NeU Cultural Committee", 
-                            "Captain of NYU Basketball team"];
+        let description = ["Head of NeU Cultural Committee",
+            "Captain of NYU Basketball team"];
         let level = ["Bachelors of Science", "Master of Science"];
         let dateStart = ["2013-12-20", "2017-01-01"];
         let dateEnd = ["2017-08-18", "2019-06-15"];
@@ -288,9 +307,9 @@ contract("Blockvitae", (accounts) => {
 
         // get edu details for each index
         for (let i = 0; i < count.toNumber(); i++) {
-             // get project 1
+            // get project 1
             let education = await blockvitae.getUserEducation(accounts[0], i);
-        
+
             // assert statements
             assert(organization[i], education[0]);
             assert(level[i], education[1]);
@@ -299,14 +318,14 @@ contract("Blockvitae", (accounts) => {
             assert(description[i], education[4]);
 
             if (i === 0)
-                assert.isFalse(education[5])
+                assert.isFalse(education[5]);
             else
-                assert.isTrue(education[5])
+                assert.isTrue(education[5]);
         }
     });
 
-      // delete work exp
-      it("education deleted successfully", async () => {
+    // delete work exp
+    it("education deleted successfully", async () => {
         let educationBeforeDelete = await blockvitae.getUserEducation(accounts[0], 0);
 
         // delete work exp
@@ -336,7 +355,7 @@ contract("Blockvitae", (accounts) => {
         assert(userName, personalOld[1]);
 
         // save in contract
-       await blockvitae.createUserDetail (
+        await blockvitae.createUserDetail(
             fullName,
             userName,
             imgUrl,
@@ -347,7 +366,7 @@ contract("Blockvitae", (accounts) => {
 
         // get the values
         let personal = await blockvitae.getUserDetail(accounts[0]);
-       
+
         // assert statements
         assert(userName, personal[1]);
     });

@@ -24,15 +24,21 @@ contract Blockvitae {
     // owner of the contract
     address public owner;
 
+    // if user is whitelisted to create account
+    mapping(address => bool) public whitelist;
+
+    // if anyone is allowed to create account
+    bool public allWhitelisted;
+
     // checks if the user has an account or not
     modifier userExists() {
-        require (dbContract.isExists(msg.sender));
+        require(dbContract.isExists(msg.sender));
         _;
     }
 
     // checks if the address is not zero
     modifier addressNotZero() {
-        require (msg.sender != address(0));
+        require(msg.sender != address(0));
         _;
     }
 
@@ -42,10 +48,17 @@ contract Blockvitae {
         _;
     }
 
+    // if user is whitelisted to create account
+    modifier isWhitelisted() {
+        require(whitelist[msg.sender] || allWhitelisted);
+        _;
+    }
+
     // sets the owner of the contract
     constructor(DB _dbContract) public {
         dbContract = _dbContract;
         owner = msg.sender;
+        allWhitelisted = false;
 
         // set this contract as the owner of DB contract
         // to avoid any external calls to DB contract
@@ -63,6 +76,40 @@ contract Blockvitae {
     // address of the new owner 
     function setOwner(address _owner) public isOwner {
         owner = _owner;
+    }
+
+    // @description
+    // If Blockvitae is updated then the new Blockvitae contract
+    // can be the owner of the DB contract to access old data
+    //
+    // @param address _owner
+    // address of the new owner 
+    function setDBOwner(address _owner) public isOwner {
+        dbContract.setOwner(_owner);
+    }
+
+    // @description
+    // add user to whitelist so that the given user can create account
+    //
+    // @param address _user
+    // address of the user
+    function addToWhitelist(address _user) public isOwner {
+        whitelist[_user] = true;
+    }
+
+    // @description
+    // removes the user from the whitelist and blocks user access
+    //
+    // @param address _user
+    // address of the user
+    function removeFromWhitelist(address _user) public isOwner {
+        whitelist[_user] = false;
+    }
+
+    // @description
+    // anyone can create account
+    function setAllWhitelisted() public isOwner {
+        allWhitelisted = true;
     }
 
     // @description
@@ -95,6 +142,7 @@ contract Blockvitae {
     )
     public
     addressNotZero
+    isWhitelisted
     {
         // insert into the database
         dbContract.insertUserDetail(User.setUserDetail(
@@ -142,6 +190,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         // insert into the database
         dbContract.insertUserSocial(User.setUserSocial(
@@ -182,6 +231,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         // insert into the database
         dbContract.insertUserProject(User.setUserProject(
@@ -227,6 +277,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         // insert in to database
         dbContract.insertUserWorkExp(User.setUserWorkExp(
@@ -244,7 +295,11 @@ contract Blockvitae {
     //
     // @param bytes32[] _skills
     // array of skills
-    function createUserSkill(bytes32[] _skills) public addressNotZero userExists {
+    function createUserSkill(bytes32[] _skills) 
+    public 
+    addressNotZero 
+    userExists 
+    isWhitelisted{
         // insert into DB
         dbContract.insertUserSkill(User.setUserSkill(_skills), msg.sender);
     }
@@ -254,7 +309,11 @@ contract Blockvitae {
     //
     // @param string _introduction
     // introduction of the user
-    function createUserIntroduction(string _introduction) public addressNotZero userExists {
+    function createUserIntroduction(string _introduction) 
+    public 
+    addressNotZero 
+    userExists
+    isWhitelisted {
         // insert into DB
         dbContract.insertUserIntroduction(User.setUserIntroduction(_introduction), msg.sender);
     }
@@ -293,6 +352,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         // insert in the database
         dbContract.insertUserEducation(User.setUserEducation(
@@ -351,6 +411,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         dbContract.deleteEducation(_index, msg.sender);
     }
@@ -427,6 +488,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         dbContract.deleteProject(_index, msg.sender);
     }
@@ -479,6 +541,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         dbContract.deleteWorkExp(_index, msg.sender);
     }
@@ -561,5 +624,14 @@ contract Blockvitae {
     returns(bool)
     {
         return dbContract.usernameExists(_userName);
+    }
+
+    // @description
+    // gets the total number of users registered so far
+    //
+    // @return uint
+    // count of users registered so far
+    function getTotalUsers() public view isOwner returns(uint) {
+        return dbContract.totalUsers();
     }
 }

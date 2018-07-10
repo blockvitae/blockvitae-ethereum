@@ -139,7 +139,6 @@ contract DB {
     // address of the user who's details are to be inserted or updated
     function insertUserSocial(User.UserSocial _social, address _user) public isOwner {
         users[_user].social = _social;
-        persistUser(_user);
     }
 
     // @description
@@ -152,7 +151,6 @@ contract DB {
     // address of the user who's details are to be inserted or updated
     function insertUserProject(User.UserProject _project, address _user) public isOwner {
         users[_user].projects.push(_project);
-        persistUser(_user);
     }
 
     // @description
@@ -165,7 +163,6 @@ contract DB {
     // address of the user who's details are to be inserted or updated
     function insertUserWorkExp(User.UserWorkExp _workExp, address _user) public isOwner {
         users[_user].work.push(_workExp);
-        persistUser(_user);
     }
 
     // @description
@@ -178,7 +175,6 @@ contract DB {
     // address of the user who's details are to be inserted or updated
     function insertUserSkill(User.UserSkill _skills, address _user) public isOwner {
         users[_user].skills = _skills;
-        persistUser(_user);
     }
 
     // @description
@@ -191,7 +187,6 @@ contract DB {
     // address of the user who's details are to be inserted or updated
     function insertUserIntroduction(User.UserIntroduction _introduction, address _user) public isOwner {
         users[_user].introduction = _introduction;
-        persistUser(_user);
     }
 
     // @description
@@ -204,7 +199,6 @@ contract DB {
     // address of the user who's details are to be inserted or updated
     function insertUserEducation(User.UserEducation _education, address _user) public isOwner {
         users[_user].education.push(_education);
-        persistUser(_user);
     }
 
     // @description
@@ -228,6 +222,7 @@ contract DB {
     // @param address _user
     // address of the user whose project is to be deleted
     function deleteEducation(uint _index, address _user) public isOwner {
+        require(!users[_user].education[_index].isDeleted);
         users[_user].education[_index].isDeleted = true;
     }
 
@@ -276,6 +271,7 @@ contract DB {
     // @param address _user
     // address of the user whose project is to be deleted
     function deleteProject(uint _index, address _user) public isOwner {
+        require(!users[_user].projects[_index].isDeleted);
         users[_user].projects[_index].isDeleted = true;
     }
 
@@ -324,6 +320,7 @@ contract DB {
     // @param address _user
     // address of the user whose project is to be deleted
     function deleteWorkExp(uint _index, address _user) public isOwner {
+        require(!users[_user].work[_index].isDeleted);
         users[_user].work[_index].isDeleted = true;
     }
 
