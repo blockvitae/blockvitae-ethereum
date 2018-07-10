@@ -88,6 +88,15 @@ contract Blockvitae {
     }
 
     // @description
+    // removes the user from the whitelist and blocks user access
+    //
+    // @param address _user
+    // address of the user
+    function removeFromWhitelist(address _user) public isOwner {
+        whitelist[_user] = false;
+    }
+
+    // @description
     // anyone can create account
     function setAllWhitelisted() public isOwner {
         allWhitelisted = true;
@@ -171,6 +180,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         // insert into the database
         dbContract.insertUserSocial(User.setUserSocial(
@@ -211,6 +221,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         // insert into the database
         dbContract.insertUserProject(User.setUserProject(
@@ -256,6 +267,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         // insert in to database
         dbContract.insertUserWorkExp(User.setUserWorkExp(
@@ -273,7 +285,11 @@ contract Blockvitae {
     //
     // @param bytes32[] _skills
     // array of skills
-    function createUserSkill(bytes32[] _skills) public addressNotZero userExists {
+    function createUserSkill(bytes32[] _skills) 
+    public 
+    addressNotZero 
+    userExists 
+    isWhitelisted{
         // insert into DB
         dbContract.insertUserSkill(User.setUserSkill(_skills), msg.sender);
     }
@@ -283,7 +299,11 @@ contract Blockvitae {
     //
     // @param string _introduction
     // introduction of the user
-    function createUserIntroduction(string _introduction) public addressNotZero userExists {
+    function createUserIntroduction(string _introduction) 
+    public 
+    addressNotZero 
+    userExists
+    isWhitelisted {
         // insert into DB
         dbContract.insertUserIntroduction(User.setUserIntroduction(_introduction), msg.sender);
     }
@@ -322,6 +342,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         // insert in the database
         dbContract.insertUserEducation(User.setUserEducation(
@@ -380,6 +401,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         dbContract.deleteEducation(_index, msg.sender);
     }
@@ -456,6 +478,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         dbContract.deleteProject(_index, msg.sender);
     }
@@ -508,6 +531,7 @@ contract Blockvitae {
     public
     addressNotZero
     userExists
+    isWhitelisted
     {
         dbContract.deleteWorkExp(_index, msg.sender);
     }
