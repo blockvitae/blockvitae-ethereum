@@ -54,6 +54,22 @@ contract("Blockvitae", (accounts) => {
             description
         );
 
+        // try creating new account with same address
+        try {
+            await blockvitae.createUserDetail(
+                fullName,
+                userName,
+                imgUrl,
+                email,
+                location,
+                description
+            );
+            assert(false);
+        }
+        catch(e) {
+            assert(e);
+        }
+
         // get the values
         let personal = await blockvitae.getUserDetail(accounts[0]);
 
@@ -355,7 +371,7 @@ contract("Blockvitae", (accounts) => {
         assert(userName, personalOld[1]);
 
         // save in contract
-        await blockvitae.createUserDetail(
+        await blockvitae.updateUserDetail(
             fullName,
             userName,
             imgUrl,
