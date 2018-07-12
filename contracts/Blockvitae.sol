@@ -36,6 +36,12 @@ contract Blockvitae {
         _;
     }
 
+    // checks if the sender address has been registered before or not
+    modifier newAccount() {
+        require(!dbContract.isExists(msg.sender));
+        _;
+    }
+
     // checks if the address is not zero
     modifier addressNotZero() {
         require(msg.sender != address(0));
@@ -143,6 +149,51 @@ contract Blockvitae {
     public
     addressNotZero
     isWhitelisted
+    newAccount
+    {
+        // insert into the database
+        dbContract.insertUserDetail(User.setUserDetail(
+            _fullName,
+            _userName,
+            _imgUrl,
+            _email,
+            _location,
+            _description), msg.sender);
+    }
+
+    // @description
+    // updates UserDetail struct for
+    // existing user
+    //
+    // @param string _fullName 
+    // full name of the user
+    //
+    // @param string _userName 
+    // username of the user
+    //
+    // @param string _imgUrl 
+    // profile image url of the user
+    //
+    // @param string _email 
+    // email of the user
+    //
+    // @param string _location
+    // (City, State) of the user
+    //
+    // @param string _description
+    // One line descriprion of the user
+    function updateUserDetail(
+        string _fullName,
+        string _userName,
+        string _imgUrl,
+        string _email,
+        string _location,
+        string _description
+    )
+    public
+    addressNotZero
+    isWhitelisted
+    userExists
     {
         // insert into the database
         dbContract.insertUserDetail(User.setUserDetail(
