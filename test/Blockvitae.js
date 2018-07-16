@@ -340,11 +340,11 @@ contract("Blockvitae", (accounts) => {
         }
     });
 
-    // delete work exp
+    // delete education
     it("education deleted successfully", async () => {
         let educationBeforeDelete = await blockvitae.getUserEducation(accounts[0], 0);
 
-        // delete work exp
+        // delete education
         await blockvitae.deleteUserEducation(0);
 
         let educationAfterDelete = await blockvitae.getUserEducation(accounts[0], 0);
@@ -353,6 +353,63 @@ contract("Blockvitae", (accounts) => {
         assert.isTrue(educationAfterDelete[5]);
     });
 
+    // check for user publication
+    it("user publication added successfully", async () => {
+        // education
+        let title = ["Publication 1", "Publication 2"];
+        let url = ["https://publication1.com",
+            "https://publication2.com"];
+        let description = ["Publication 1", "Publication 2"];
+        let deleted = [false, true];
+
+        // create publication 1
+        await blockvitae.createUserPublication(
+            title[0],
+            url[0],
+            description[0],
+            deleted[0]
+        );
+
+        // create publication 2
+        await blockvitae.createUserPublication(
+            title[1],
+            url[1],
+            description[1],
+            deleted[1]
+        );
+
+        // get edu count 
+        let count = await blockvitae.getPublicationCount(accounts[0]);
+
+        // get edu details for each index
+        for (let i = 0; i < count.toNumber(); i++) {
+            // get publication 1
+            let publication = await blockvitae.getPublication(accounts[0], i);
+
+            // assert statements
+            assert(title[i], publication[0]);
+            assert(url[i], publication[1]);
+            assert(description[i], publication[2]);
+
+            if (i === 0)
+                assert.isFalse(publication[3]);
+            else
+                assert.isTrue(publication[3]);
+        }
+    });
+
+    // delete publication
+    it("publication deleted successfully", async () => {
+        let publicationBeforeDelete = await blockvitae.getUserPublication(accounts[0], 0);
+
+        // delete publication
+        await blockvitae.deleteUserPublication(0);
+
+        let publicationAfterDelete = await blockvitae.getUserPublication(accounts[0], 0);
+
+        assert.isFalse(publicationBeforeDelete[3]);
+        assert.isTrue(publicationAfterDelete[3]);
+    });
 
     // username updated successfully
     it("username updated successfully", async () => {
