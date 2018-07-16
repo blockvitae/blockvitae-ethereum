@@ -84,6 +84,7 @@ library User {
         string title; // title of the paper
         string url; // link to the paper
         string description; // description of the paper
+        bool isDeleted; // true if the current publication has been deleted
     }
 
     // User is struct which holds all
@@ -357,12 +358,16 @@ library User {
     // @param string _description
     // description of the paper
     //
+    // @param bool _isDeleted
+    // true if the current record has been deleted by the user
+    // 
     // @return UserPublication
     // UserPublication struct for the given values
     function setUserPublication(
         string _title,
         string _url,
         string _description
+        bool _isDeleted
     )
     internal
     pure
@@ -375,6 +380,7 @@ library User {
         publication.title = bytes(_title).length != 0 ? _title : "";
         publication.url = bytes(_url).length != 0 ? _url : "";
         publication.description = bytes(_description).length != 0 ? _description : "";
+        publication.isDeleted = _isDeleted ? true : false;
         return publication;
     }
 
