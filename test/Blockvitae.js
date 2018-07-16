@@ -384,7 +384,7 @@ contract("Blockvitae", (accounts) => {
         // get edu details for each index
         for (let i = 0; i < count.toNumber(); i++) {
             // get publication 1
-            let publication = await blockvitae.getPublication(accounts[0], i);
+            let publication = await blockvitae.getUserPublication(accounts[0], i);
 
             // assert statements
             assert(title[i], publication[0]);
