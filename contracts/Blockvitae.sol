@@ -259,7 +259,7 @@ contract Blockvitae {
     // creates UserProject struct and insert in DB
     //
     // @param string _name
-    // name of the 
+    // name of the project
     //
     // @param string _shortDescription
     // One line description of the project
@@ -290,6 +290,39 @@ contract Blockvitae {
             _shortDescription,
             _description,
             _url,
+            _isDeleted), msg.sender);
+    }
+
+    // @description
+    // creates UserPublication struct and insert in DB
+    //
+    // @param string _title
+    // title of the paper
+    //
+    // @param string _url
+    // url of the paper
+    //
+    // @param string _description 
+    // description of the paper
+    //
+    // @param bool _isDeleted
+    // true if the current record has been deleted by the user
+    function createUserPublication(
+        string _title,
+        string _url,
+        string _description,
+        bool _isDeleted
+    )
+    public
+    addressNotZero
+    userExists
+    isWhitelisted
+    {
+        // insert into the database
+        dbContract.insertUserPublication(User.setUserPublication(
+            _title,
+            _url,
+            _description,
             _isDeleted), msg.sender);
     }
 
@@ -465,6 +498,56 @@ contract Blockvitae {
     isWhitelisted
     {
         dbContract.deleteEducation(_index, msg.sender);
+    }
+
+    // @description
+    // gets count of total publications added
+    //
+    // @param address _user
+    // address of the user who's data is to be searched
+    //
+    // @return uint
+    // count of the total publication for the given user
+    function getPublicationCount(address _user)
+    public
+    view
+    returns(uint) {
+        return dbContract.findUserPublication(_user).length;
+    }
+
+    // @description
+    // gets the user publication with the given index for the given user
+    //
+    // @param address _user
+    // address of the user who's publication is to be searched
+    //
+    // @param uint _index
+    // index of the publication to be searched
+    //
+    // @return (string, string, string, bool)
+    // title, url, description & isDeleted of the publication with given index
+    function getUserPublication(address _user, uint _index)
+    public
+    view
+    returns(string, string, string, bool) {
+        User.UserPublication[] memory publication = dbContract.findUserPublication(_user);
+
+        return (publication[_index].title, publication[_index].url,
+        publication[_index].description, publication[_index].isDeleted);
+    }
+
+    // @description
+    // deletes the publication for the given index and address
+    //
+    // @param uint _index
+    // index of the publication to be deleted
+    function deleteUserPublication(uint _index)
+    public
+    addressNotZero
+    userExists
+    isWhitelisted
+    {
+        dbContract.deletePublication(_index, msg.sender);
     }
 
     // @description

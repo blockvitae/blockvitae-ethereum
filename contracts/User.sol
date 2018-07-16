@@ -366,7 +366,7 @@ library User {
     function setUserPublication(
         string _title,
         string _url,
-        string _description
+        string _description,
         bool _isDeleted
     )
     internal
