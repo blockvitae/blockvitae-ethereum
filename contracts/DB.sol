@@ -220,10 +220,48 @@ contract DB {
     // index of the education to be deleted
     //
     // @param address _user
-    // address of the user whose project is to be deleted
+    // address of the user whose education is to be deleted
     function deleteEducation(uint _index, address _user) public isOwner {
         require(!users[_user].education[_index].isDeleted);
         users[_user].education[_index].isDeleted = true;
+    }
+
+    // @description
+    // inserts or updates a new UserPublication in the database
+    //
+    // @param User.UserPublication _publication
+    // UserPublication struct for the user
+    //
+    // @param address _user
+    // address of the user who's details are to be inserted or updated
+    function insertUserPublication(User.UserPublication _publication, address _user) public isOwner {
+        users[_user].publications.push(_publication);
+    }
+
+    
+    // @description
+    // finds the UserPublication struct values for the given user
+    //
+    // @param address _user
+    // address of the user who's data is to be searched
+    //
+    // @return User.UserPublication[]
+    // UserPublication struct array of the user with given address
+    function findUserPublication(address _user) view public isOwner returns(User.UserPublication[]){
+        return users[_user].publications;
+    }
+
+    // @description
+    // deletes the publication for the given index and address
+    //
+    // @param uint _index
+    // index of the publication to be deleted
+    //
+    // @param address _user
+    // address of the user whose publication is to be deleted
+    function deletePublication(uint _index, address _user) public isOwner {
+        require(!users[_user].publications[_index].isDeleted);
+        users[_user].publications[_index].isDeleted = true;
     }
 
     // @description

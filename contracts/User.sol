@@ -79,6 +79,14 @@ library User {
         string introduction; // introduction of the user
     }
 
+    // Academic publication
+    struct UserPublication {
+        string title; // title of the paper
+        string url; // link to the paper
+        string description; // description of the paper
+        bool isDeleted; // true if the current publication has been deleted
+    }
+
     // User is struct which holds all
     // the details for a particular user
     // creating a CV on Blockvitae
@@ -90,6 +98,7 @@ library User {
         UserProject[] projects; // projects of the user
         UserSkill skills; // skills of the user
         UserIntroduction introduction; // introduction of the user
+        UserPublication[] publications; // publications by the user
         bool exists; // true everytime add new new struct
         address owner; // owner of the user profile
     }
@@ -223,6 +232,8 @@ library User {
     returns(UserProject)
     {
         require(bytes(_name).length > 0);
+        require(bytes(_shortDescription).length > 0);
+        require(bytes(_description).length > 0);
         UserProject memory project;
         project.description = bytes(_description).length != 0 ? _description : "";
         project.shortDescription = bytes(_shortDescription).length != 0 ? _shortDescription : "";
@@ -272,6 +283,9 @@ library User {
     returns(UserWorkExp)
     {
         require(bytes(_company).length > 0);
+        require(bytes(_position).length > 0);
+        require(bytes(_dateStart).length > 0);
+        require(bytes(_description).length > 0);
         UserWorkExp memory workExp;
         workExp.company = bytes(_company).length != 0 ? _company : "";
         workExp.position = bytes(_position).length != 0 ? _position : "";
@@ -319,6 +333,9 @@ library User {
     returns(UserEducation)
     {
         require(bytes(_organization).length > 0);
+        require(bytes(_level).length > 0);
+        require(bytes(_dateStart).length > 0);
+        require(bytes(_description).length > 0);
         UserEducation memory education;
         education.organization = bytes(_organization).length != 0 ? _organization : "";
         education.level = bytes(_level).length != 0 ? _level : "";
@@ -327,6 +344,44 @@ library User {
         education.description = bytes(_description).length != 0 ? _description : "";
         education.isDeleted = _isDeleted ? true : false;
         return education;
+    }
+
+    // @description
+    // sets the values of UserPublication struct
+    //
+    // @param string _title
+    // title of the paper
+    //
+    // @param string _url
+    // link to the paper
+    //
+    // @param string _description
+    // description of the paper
+    //
+    // @param bool _isDeleted
+    // true if the current record has been deleted by the user
+    // 
+    // @return UserPublication
+    // UserPublication struct for the given values
+    function setUserPublication(
+        string _title,
+        string _url,
+        string _description,
+        bool _isDeleted
+    )
+    internal
+    pure
+    returns(UserPublication)
+    {
+        require(bytes(_title).length > 0);
+        require(bytes(_url).length > 0);
+        require(bytes(_description).length > 0);
+        UserPublication memory publication;
+        publication.title = bytes(_title).length != 0 ? _title : "";
+        publication.url = bytes(_url).length != 0 ? _url : "";
+        publication.description = bytes(_description).length != 0 ? _description : "";
+        publication.isDeleted = _isDeleted ? true : false;
+        return publication;
     }
 
     // @description
