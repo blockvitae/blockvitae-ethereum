@@ -231,6 +231,8 @@ library User {
     returns(UserProject)
     {
         require(bytes(_name).length > 0);
+        require(bytes(_shortDescription).length > 0);
+        require(bytes(_description).length > 0);
         UserProject memory project;
         project.description = bytes(_description).length != 0 ? _description : "";
         project.shortDescription = bytes(_shortDescription).length != 0 ? _shortDescription : "";
@@ -280,6 +282,9 @@ library User {
     returns(UserWorkExp)
     {
         require(bytes(_company).length > 0);
+        require(bytes(_position).length > 0);
+        require(bytes(_dateStart).length > 0);
+        require(bytes(_description).length > 0);
         UserWorkExp memory workExp;
         workExp.company = bytes(_company).length != 0 ? _company : "";
         workExp.position = bytes(_position).length != 0 ? _position : "";
@@ -328,6 +333,7 @@ library User {
     {
         require(bytes(_organization).length > 0);
         require(bytes(_level).length > 0);
+        require(bytes(_dateStart).length > 0);
         require(bytes(_description).length > 0);
         UserEducation memory education;
         education.organization = bytes(_organization).length != 0 ? _organization : "";
