@@ -14,7 +14,7 @@ library User {
     // details of the user
     struct UserDetail {
         string fullName; // fullname of the user
-        string userName; // username or url selected by the user
+        bytes32 userName; // username or url selected by the user
         string imgUrl; // profile image url
         string email; // email address of the user
         string location; // location of the user
@@ -109,7 +109,7 @@ library User {
     // @param string _fullName 
     // full name of the user
     //
-    // @param string _userName 
+    // @param bytes32 _userName 
     // username of the user
     //
     // @param string _imgUrl 
@@ -128,7 +128,7 @@ library User {
     // UserDetail struct for the given values
     function setUserDetail(
         string _fullName,
-        string _userName,
+        bytes32 _userName,
         string _imgUrl,
         string _email,
         string _location,
@@ -139,7 +139,7 @@ library User {
     returns(UserDetail)
     {
         UserDetail memory detail;
-        detail.fullName = _fullName;
+        detail.fullName = bytes(_fullName).length != 0 ? _fullName : "";
         detail.userName = _userName;
         detail.imgUrl = _imgUrl;
         detail.email = _email;
