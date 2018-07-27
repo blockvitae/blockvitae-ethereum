@@ -23,17 +23,17 @@ contract DB {
     // owners of DB
     mapping(address => bool) private owners;
 
+    // list mapping of all users
+    mapping(address => User.UserMain) public users;
+
+    // list mapping of all userNames
+    mapping(bytes32 => address) public userNames;
+
     // constructor function
     constructor() public {
         totalUsers = 0;
         owners[address(this)] = true;
     } 
-
-    // list mapping of all users
-    mapping(address => User.UserMain) public users;
-
-    // list mapping of all userNames
-    mapping(string => address) public userNames;
 
     // check for the owner
     // address(this) gets true in the start but once all contracts
@@ -43,6 +43,10 @@ contract DB {
     modifier isOwner() {
         require(owners[msg.sender] || owners[address(this)]);
         _;
+    }
+
+    function isOwnerDB() public view isOwner returns(bool){
+        return (owners[msg.sender] || owners[address(this)]);
     }
 
     // @description
@@ -71,6 +75,14 @@ contract DB {
         users[_user].personal = _personal;
     }
 
+    function getUserNameAddr(bytes32 _user) public view isOwner returns(address) {
+        return userNames[_user];
+    }
+
+    function setUserNameAddr(bytes32 _userName, address _user) public isOwner {
+        userNames[_userName] = _user;
+    }
+
     function getUserSocial(address _user) public view isOwner returns(User.UserSocial) {
         return users[_user].social;
     }
@@ -79,7 +91,7 @@ contract DB {
         users[_user].social = _social;
     }
 
-    function getUserProject(address _user) public view isOwner returns(User.UserProject) {
+    function getUserProject(address _user) public view isOwner returns(User.UserProject[]) {
         return users[_user].projects;
     }
 
@@ -87,7 +99,7 @@ contract DB {
         users[_user].projects.push(_project);
     }
 
-    function getUserWorkExp(address _user) public view isOwner returns(User.UserWorkExp) {
+    function getUserWorkExp(address _user) public view isOwner returns(User.UserWorkExp[]) {
         return users[_user].work;
     }
 
@@ -111,7 +123,7 @@ contract DB {
         users[_user].introduction = _intro;
     }
 
-    function getUserEducation(address _user) public view isOwner returns(User.UserEducation) {
+    function getUserEducation(address _user) public view isOwner returns(User.UserEducation[]) {
         return users[_user].education;
     }
 
@@ -119,16 +131,20 @@ contract DB {
         users[_user].education.push(_edu);
     }
 
-    function getUserPublication(address _user) public view isOwner returns(User.UserPublication) {
+    function deleteUserEducation(uint _index, address _user) public isOwner {
+        users[_user].education[_index].isDeleted = true;
+    }
+
+    function getUserPublication(address _user) public view isOwner returns(User.UserPublication[]) {
         return users[_user].publications;
     }
 
     function setUserPublication(User.UserPublication _pub, address _user) public isOwner {
-        users[_user].publcations.push(_pub);
+        users[_user].publications.push(_pub);
     }
 
-    function getUsers() public view isOwner {
-        return users;
+    function isExists(address _user) public view isOwner returns(bool) {
+        return users[_user].exists;
     }
 
     // @description
@@ -136,7 +152,7 @@ contract DB {
     // 
     // @param address _user
     // address of the user
-    function persistUser(address _user) private {
+    function persistUser(address _user) public {
         users[_user].exists = true;
         users[_user].owner = _user;
     }
