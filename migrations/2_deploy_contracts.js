@@ -10,6 +10,7 @@ let Db = artifacts.require("./DB.sol");
 let DbGetter = artifacts.require("./DbGetter.sol");
 let DbDelete = artifacts.require("./DbDelete.sol");
 let DbInsert = artifacts.require("./DbInsert.sol");
+let DbReset = artifacts.require("./DbReset.sol");
 
 module.exports = function (deployer) {
     // deploy contracts
@@ -19,15 +20,26 @@ module.exports = function (deployer) {
             deployer.link(User, [Db, Blockvitae]);
             // return
             return deployer
-                .deploy([DbGetter, DbDelete, DbInsert])
+                .deploy(Db)
                 .then(() => {
-                   return deployer.deploy(Blockvitae, DbInsert.address, DbGetter.address, DbDelete.address)
-                   .then(() => {
                     return deployer.deploy([
-                        [BlockvitaeGetter, DbInsert.address, DbGetter.address, DbDelete.address],
-                        [BlockvitaeDelete, DbInsert.address, DbGetter.address, DbDelete.address],
-                        [BlockvitaeInsert, DbInsert.address, DbGetter.address, DbDelete.address]]);
-                   })
-                });
+                        [DbDelete, Db.address],
+                        [DbGetter, Db.address],
+                        [DbInsert, Db.address]])
+                        .then(() => {
+                            return deployer.deploy(Blockvitae, Db.address, DbInsert.address, DbGetter.address, DbDelete.address)
+                                .then(() => {
+                                    // always deploy BlockviateInsert at the last
+                                    return deployer.deploy([
+                                        [BlockvitaeGetter, Db.address, DbInsert.address, DbGetter.address, DbDelete.address, Blockvitae.address],
+                                        [BlockvitaeDelete, Db.address, DbInsert.address, DbGetter.address, DbDelete.address, Blockvitae.address],
+                                        [BlockvitaeInsert, Db.address, DbInsert.address, DbGetter.address, DbDelete.address, Blockvitae.address]
+                                    ])
+                                        .then(() => {
+                                            return deployer.deploy(DbReset, Db.address)
+                                        })
+                                })
+                        });
+                })
         });
 }
