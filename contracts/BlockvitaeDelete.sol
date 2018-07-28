@@ -14,16 +14,25 @@ import "./Blockvitae.sol";
 
 contract BlockvitaeDelete is Blockvitae {
 
+    Blockvitae blockvitae;
+
     // @Reference: 
     // http://solidity.readthedocs.io/en/latest/contracts.html#arguments-for-base-constructors
-    constructor(DBInsert _dbInsert, DBGetter _dbGetter, DBDelete _dbDelete)
-    Blockvitae(_dbInsert, _dbGetter, _dbDelete) 
+    constructor(DB _db, DBInsert _dbInsert, DBGetter _dbGetter, DBDelete _dbDelete, Blockvitae _blockvitae)
+    Blockvitae(_db,_dbInsert, _dbGetter, _dbDelete) 
     public {
       // set this contract as the owner of DB contract
       // to avoid any external calls to DB contract
       // All calls to DB contract should pass through this
       // contract
-      dbDelete.setOwner(address(this));
+      _db.setOwner(address(this));
+      blockvitae = _blockvitae;
+    }
+
+    // if user is whitelisted to create account
+    modifier isWhitelisted() {
+        require(blockvitae.whitelist(msg.sender) || blockvitae.allWhitelisted());
+        _;
     }
 
     // @description
