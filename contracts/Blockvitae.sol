@@ -20,7 +20,9 @@ contract Blockvitae {
 
     using User for User.UserMain;
 
-    // DB
+    DB internal db;
+
+    // DB Insert
     DBInsert internal dbInsert;
 
     // Getter DB
@@ -38,15 +40,20 @@ contract Blockvitae {
     // if anyone is allowed to create account
     bool public allWhitelisted;
 
-    // checks if the user has an account or not
-    modifier userExists() {
-        require(dbGetter.isExists(msg.sender));
-        _;
+    // sets the owner of the contract
+    constructor(DB _db, DBInsert _dbInsert, DBGetter _dbGetter, DBDelete _dbDelete) public {
+        dbInsert = _dbInsert;
+        dbGetter = _dbGetter;
+        dbDelete = _dbDelete;
+        owner = msg.sender;
+        allWhitelisted = false;
+        _db.setOwner(address(this));
+        db = _db;
     }
 
-    // checks if the sender address has been registered before or not
-    modifier newAccount() {
-        require(!dbGetter.isExists(msg.sender));
+    // checks if the user has an account or not
+    modifier userExists() {
+        require(db.isExists(msg.sender, address(this)));
         _;
     }
 
@@ -57,23 +64,25 @@ contract Blockvitae {
     }
 
     // check for the owner
-    modifier isOwner() {
-        require(owner == msg.sender);
+    modifier isOwner(address _sender) {
+        require(owner == _sender);
         _;
     }
 
-    // if user is whitelisted to create account
-    modifier isWhitelisted() {
-        require(whitelist[msg.sender] || allWhitelisted);
-        _;
+    function setOwner(address _owner, address _sender) public isOwner(_sender) {
+        owner = _owner;
     }
 
-    // sets the owner of the contract
-    constructor(DBInsert _dbInsert, DBGetter _dbGetter, DBDelete _dbDelete) public {
-        dbInsert = _dbInsert;
-        dbGetter = _dbGetter;
-        dbDelete = _dbDelete;
-        owner = msg.sender;
-        allWhitelisted = false;
-    } 
+    function addToWhiteList(address _user, address _sender) public isOwner(_sender) {
+        whitelist[_user] = true;
+    }
+
+    function removeFromWhiteList(address _user, address _sender) public isOwner(_sender) {
+        whitelist[_user] = false;
+    }
+
+    function setAllWhitelist(address _sender) public isOwner(_sender) {
+        allWhitelisted = true;
+    }
+ 
 }
