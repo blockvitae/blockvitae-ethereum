@@ -1,6 +1,8 @@
 let HDWalletProvider = require("truffle-hdwallet-provider");
 
 // Create variables mnemonics and infura for ETH Wallert mnemonics and infura node address
+let mnemonics = ""
+let infura = ""
 
 module.exports = {
   solc: {
