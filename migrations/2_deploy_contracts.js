@@ -7,9 +7,9 @@ let BlockvitaeGetter = artifacts.require("./BlockvitaeGetter.sol");
 let BlockvitaeDelete = artifacts.require("./BlockvitaeDelete.sol");
 let User = artifacts.require("./User.sol");
 let Db = artifacts.require("./DB.sol");
-let DbGetter = artifacts.require("./DbGetter.sol");
-let DbDelete = artifacts.require("./DbDelete.sol");
-let DbInsert = artifacts.require("./DbInsert.sol");
+let DbGetter = artifacts.require("./DBGetter.sol");
+let DbDelete = artifacts.require("./DBDelete.sol");
+let DbInsert = artifacts.require("./DBInsert.sol");
 let DbReset = artifacts.require("./DbReset.sol");
 
 module.exports = function (deployer) {
