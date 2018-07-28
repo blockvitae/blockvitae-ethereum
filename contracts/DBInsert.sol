@@ -13,34 +13,17 @@ pragma experimental ABIEncoderV2; // experimental
 // imports
 import "./DB.sol";
 
-contract DBInsert is DB{
+contract DBInsert{
 
-    // address of the owner of the contract
-    address public owner;
-
-    constructor() public {
-        // initially make this contract its own owner
-        // This will be invalid once Blockvitae gets deployed
-        // as it will become the owner of this contract
-        owner = address(this);
+    DB private db;
+    
+    constructor(DB _db) public {
+        db = _db;
     }
 
-    // check for the owner
-    // owner == address(this) will get
-    // invalid after Blockvitae becomes owner of
-    // this contract
-    modifier isOwner() {
-        require(owner == msg.sender || owner == address(this));
-        _;
-    }
-
-    // @description
-    // updates the current owner
-    //
-    // @param address _blockvitae
-    // address of the Blockvitae contract
-    function setOwner(address _blockvitae) public isOwner{
-        owner = _blockvitae;
+    modifier isOwner(address _sender) {
+      require(db.isOwnerDB(_sender));
+      _;
     }
     
     // @description
@@ -52,54 +35,52 @@ contract DBInsert is DB{
     //
     // @param address _user
     // address of the user who's details are to be inserted or updated
-    function insertUserDetail(User.UserDetail _personal, address _user) public isOwner {
+    function insertUserDetail(User.UserDetail _personal, address _user) public isOwner(msg.sender) {
         // if new requested userName is available
-        if (userNames[_personal.userName] == address(0x0)) { 
+        if (db.getUserNameAddr(_personal.userName, msg.sender) == address(0x0)) { 
             // if user exists
             // and user's old userName is not equal to the new one
             // string comparison not allowed. Therefore, compare hashes.
-            if (users[_user].exists
-                && keccak256(abi.encodePacked(users[_user].personal.userName)) 
-                                != keccak256(abi.encodePacked(_personal.userName))) {
+            if (db.isExists(_user, msg.sender)
+                && keccak256(abi.encodePacked(db.getUserDetail(_user, msg.sender).userName)) 
+                                != keccak256(abi.encodePacked(_personal.userName, msg.sender))) {
                 // temp save oldUserName
-                string memory oldUserName = users[_user].personal.userName;
+                bytes32 oldUserName = db.getUserDetail(_user, msg.sender).userName;
 
                 // update personal details
-                users[_user].personal = _personal;
+               db.setUserDetail(_personal, _user, msg.sender);
 
                 // update userName
-                userNames[oldUserName] = address(0x0);
+                db.setUserNameAddr(oldUserName, address(0x0), msg.sender);
 
                 // assign new userName
-                userNames[_personal.userName] = _user;
+                db.setUserNameAddr(_personal.userName, _user, msg.sender);
             }
             // user doesn't exist and requested userName is available
-            else if (!users[_user].exists) {
-                 // update personal details
-                users[_user].personal = _personal;
+            else if (!db.isExists(_user, msg.sender)) {
+                // update personal details
+                db.setUserDetail(_personal, _user, msg.sender);  
 
                 // assign new userName
-                userNames[_personal.userName] = _user;
-
+                db.setUserNameAddr(_personal.userName, _user, msg.sender);
                 // update new user count
-                totalUsers++;
+                db.incrementTotalUsers(msg.sender);
             }  
-
-            persistUser(_user); 
+            db.persistUser(_user, msg.sender); 
         }
         // user exits but hasn't requested for a new userName
         else {
             // existing userName is same as the one sent in the request
-            if (keccak256(abi.encodePacked(users[_user].personal.userName))
-                    == keccak256(abi.encodePacked(_personal.userName))) {
+            if (keccak256(abi.encodePacked(db.getUserDetail(_user, msg.sender).userName))
+                    == keccak256(abi.encodePacked(_personal.userName, msg.sender))) {
                 // update personal details
-                users[_user].personal = _personal;
+                db.setUserDetail(_personal, _user, msg.sender);
 
                 // assign new userName
-                userNames[_personal.userName] = _user;
+                db.setUserNameAddr(_personal.userName, _user, msg.sender);
             }
 
-            persistUser(_user);
+            db.persistUser(_user, msg.sender);
         }
     }
 
@@ -111,8 +92,8 @@ contract DBInsert is DB{
     //
     // @param address _user
     // address of the user who's details are to be inserted or updated
-    function insertUserSocial(User.UserSocial _social, address _user) public isOwner {
-        users[_user].social = _social;
+    function insertUserSocial(User.UserSocial _social, address _user) public isOwner(msg.sender) {
+        db.setUserSocial(_social, _user, msg.sender);
     }
 
     // @description
@@ -123,8 +104,8 @@ contract DBInsert is DB{
     //
     // @param address _user
     // address of the user who's details are to be inserted or updated
-    function insertUserProject(User.UserProject _project, address _user) public isOwner {
-        users[_user].projects.push(_project);
+    function insertUserProject(User.UserProject _project, address _user) public isOwner(msg.sender) {
+        db.setUserProject(_project, _user, msg.sender);
     }
 
     // @description
@@ -135,8 +116,8 @@ contract DBInsert is DB{
     //
     // @param address _user
     // address of the user who's details are to be inserted or updated
-    function insertUserWorkExp(User.UserWorkExp _workExp, address _user) public isOwner {
-        users[_user].work.push(_workExp);
+    function insertUserWorkExp(User.UserWorkExp _workExp, address _user) public isOwner(msg.sender) {
+        db.setUserWorkExp(_workExp, _user, msg.sender);
     }
 
     // @description
@@ -147,8 +128,8 @@ contract DBInsert is DB{
     //
     // @param address _user
     // address of the user who's details are to be inserted or updated
-    function insertUserSkill(User.UserSkill _skills, address _user) public isOwner {
-        users[_user].skills = _skills;
+    function insertUserSkill(User.UserSkill _skills, address _user) public isOwner(msg.sender) {
+        db.setUserSkills(_skills, _user, msg.sender);
     }
 
     // @description
@@ -159,8 +140,8 @@ contract DBInsert is DB{
     //
     // @param address _user
     // address of the user who's details are to be inserted or updated
-    function insertUserIntroduction(User.UserIntroduction _introduction, address _user) public isOwner {
-        users[_user].introduction = _introduction;
+    function insertUserIntroduction(User.UserIntroduction _introduction, address _user) public isOwner(msg.sender) {
+        db.setUserIntro(_introduction, _user, msg.sender);
     }
 
     // @description
@@ -171,8 +152,8 @@ contract DBInsert is DB{
     //
     // @param address _user
     // address of the user who's details are to be inserted or updated
-    function insertUserEducation(User.UserEducation _education, address _user) public isOwner {
-        users[_user].education.push(_education);
+    function insertUserEducation(User.UserEducation _education, address _user) public isOwner(msg.sender) {
+        db.setUserEducation(_education, _user, msg.sender);
     }
     
     // @description
@@ -183,17 +164,7 @@ contract DBInsert is DB{
     //
     // @param address _user
     // address of the user who's details are to be inserted or updated
-    function insertUserPublication(User.UserPublication _publication, address _user) public isOwner {
-        users[_user].publications.push(_publication);
-    }
-
-    // @description
-    // creates the existance of the user
-    // 
-    // @param address _user
-    // address of the user
-    function persistUser(address _user) private {
-        users[_user].exists = true;
-        users[_user].owner = _user;
+    function insertUserPublication(User.UserPublication _publication, address _user) public isOwner(msg.sender) {
+        db.setUserPublication(_publication, _user, msg.sender);
     }
 }
