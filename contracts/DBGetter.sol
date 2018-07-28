@@ -6,55 +6,39 @@
   * This files acts as the DB layer between the
   * model User.sol and the controller Blockvitae.sol
   */
-
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2; // experimental
 
 // imports
 import "./DB.sol";
 
-contract DBGetter is DB {
+contract DBGetter {
 
-    // address of the owner of the contract
-    address public owner;
+    DB private db;
 
-    constructor() public {
-        // initially make this contract its own owner
-        // This will be invalid once Blockvitae gets deployed
-        // as it will become the owner of this contract
-        owner = address(this);
+    constructor(DB _db) public {
+        db = _db;
     }
 
-    // check for the owner
-    // owner == address(this) will get
-    // invalid after Blockvitae becomes owner of
-    // this contract
-    modifier isOwner() {
-        require(owner == msg.sender || owner == address(this));
-        _;
+    modifier isOwner(address _sender) {
+      require(db.isOwnerDB(_sender));
+      _;
     }
 
-    // @description
-    // updates the current owner
-    //
-    // @param address _blockvitae
-    // address of the Blockvitae contract
-    function setOwner(address _blockvitae) public isOwner{
-        owner = _blockvitae;
-    }
+   // @description 
+   // checks if the user with given address exists
+   //
+   // @param address _user 
+   // address of the user to be looked up
+   //
+   // @return bool 
+   // true if user exists else false
+   function isUserExists(address _user) public view isOwner(msg.sender) returns(bool) {
+       require(_user != address(0));
 
-    // @description 
-    // checks if the user with given address exists
-    //
-    // @param address _user 
-    // address of the user to be looked up
-    //
-    // @return bool 
-    // true if user exists else false
-    function isExists(address _user) public view isOwner returns(bool) {
-        require(_user != address(0));
-        return users[_user].exists;
-    }
+       return db.isExists(_user, msg.sender);
+   }  
+
   // @description
   // finds the UserEducation struct values for the given user
   //
@@ -63,8 +47,8 @@ contract DBGetter is DB {
   //
   // @return User.UserEducation[]
   // UserEducation struct array of the user with given address
-  function findUserEducation(address _user) view public isOwner returns(User.UserEducation[]){
-      return users[_user].education;
+  function findUserEducation(address _user) view public isOwner(msg.sender) returns(User.UserEducation[]){
+      return db.getUserEducation(_user, msg.sender);
   }
 
   // @description
@@ -75,8 +59,8 @@ contract DBGetter is DB {
   //
   // @return User.UserPublication[]
   // UserPublication struct array of the user with given address
-  function findUserPublication(address _user) view public isOwner returns(User.UserPublication[]){
-      return users[_user].publications;
+  function findUserPublication(address _user) view public isOwner(msg.sender) returns(User.UserPublication[]){
+      return db.getUserPublication(_user, msg.sender);
   }
 
   // @description
@@ -87,8 +71,8 @@ contract DBGetter is DB {
   //
   // @return User.UserSkill
   // UserSkill struct of the user with given address
-  function findUserSkill(address _user) view public isOwner returns(User.UserSkill) {
-      return users[_user].skills;
+  function findUserSkill(address _user) view public isOwner(msg.sender) returns(User.UserSkill) {
+      return db.getUserSkill(_user, msg.sender);
   }
 
   // @description
@@ -99,8 +83,8 @@ contract DBGetter is DB {
   //
   // @return User.UserIntroduction
   // UserIntroduction struct of the user with given address
-  function findUserIntroduction(address _user) view public isOwner returns(User.UserIntroduction) {
-      return users[_user].introduction;
+  function findUserIntroduction(address _user) view public isOwner(msg.sender) returns(User.UserIntroduction) {
+      return db.getUserIntro(_user, msg.sender);
   }
 
   // @description
@@ -111,8 +95,8 @@ contract DBGetter is DB {
   //
   // @return User.UserProject[]
   // UserProject struct array of the user with given address
-  function findUserProject(address _user) view public isOwner returns(User.UserProject[]) {
-      return users[_user].projects;
+  function findUserProject(address _user) view public isOwner(msg.sender) returns(User.UserProject[]) {
+      return db.getUserProject(_user, msg.sender);
   }
 
   // @description
@@ -123,8 +107,8 @@ contract DBGetter is DB {
   //
   // @return User.UserDetail
   // UserDetail struct of the user with given address
-  function findUserDetail(address _user) view public isOwner returns(User.UserDetail) {
-      return users[_user].personal;
+  function findUserDetail(address _user) view public isOwner(msg.sender) returns(User.UserDetail) {
+      return db.getUserDetail(_user, msg.sender);
   }
 
   // @description
@@ -135,8 +119,8 @@ contract DBGetter is DB {
   //
   // @return User.UserSocial
   // UserSocial struct of the user with given address
-  function findUserSocial(address _user) view public isOwner returns(User.UserSocial) {
-      return users[_user].social;
+  function findUserSocial(address _user) view public isOwner(msg.sender) returns(User.UserSocial) {
+      return db.getUserSocial(_user, msg.sender);
   }
 
   // @description
@@ -147,8 +131,8 @@ contract DBGetter is DB {
   //
   // @return User.UserWorkExp
   // UserWorkExp struct of the user with given address
-  function findUserWorkExp(address _user) view public isOwner returns(User.UserWorkExp[]) {
-      return users[_user].work;
+  function findUserWorkExp(address _user) view public isOwner(msg.sender) returns(User.UserWorkExp[]) {
+      return db.getUserWorkExp(_user, msg.sender);
   }
 
   // @description
@@ -159,9 +143,8 @@ contract DBGetter is DB {
   //
   // @return address
   // address of the user with given userName
-  function findAddrForUserName(string _userName) view public isOwner returns(address) {
-      require(users[userNames[_userName]].exists);
-      return userNames[_userName];
+  function findAddrForUserName(bytes32 _userName) view public isOwner(msg.sender) returns(address) {
+      return db.getUserNameAddr(_userName, msg.sender);
   }
 
   // @description
@@ -172,8 +155,8 @@ contract DBGetter is DB {
   //
   // @return bool
   // true if username is available else false
-  function usernameExists(string _userName) view public isOwner returns(bool) {
-      if (userNames[_userName] != address(0x0))
+  function usernameExists(bytes32 _userName) view public isOwner(msg.sender) returns(bool) {
+      if (db.getUserNameAddr(_userName, msg.sender) != address(0x0))
           return false;
       else
           return true;
