@@ -15,16 +15,40 @@ import "./Blockvitae.sol";
 // @title Blockvitae for CV
 contract BlockvitaeInsert is Blockvitae {
 
+    Blockvitae private blockvitae;
+
+    DB private db;
+
     // @Reference: 
 	// http://solidity.readthedocs.io/en/latest/contracts.html#arguments-for-base-constructors
-	constructor(DBInsert _dbInsert, DBGetter _dbGetter, DBDelete _dbDelete)
-	Blockvitae(_dbInsert, _dbGetter, _dbDelete) 
+	constructor(DB _db, DBInsert _dbInsert, DBGetter _dbGetter, DBDelete _dbDelete, Blockvitae _blockvitae)
+	Blockvitae(_db, _dbInsert, _dbGetter, _dbDelete) 
     public {
         // set this contract as the owner of DB contract
         // to avoid any external calls to DB contract
         // All calls to DB contract should pass through this
         // contract
-        dbInsert.setOwner(address(this));
+        _db.setOwner(address(this));
+        db = _db;
+        blockvitae = _blockvitae;
+    }
+
+    // checks if the sender address has been registered before or not
+    modifier newAccount() {
+        require(!db.isExists(msg.sender, address(this)));
+        _;
+    }
+
+    // check for the owner
+    modifier isOwner(address _sender) {
+        require(blockvitae.owner() == _sender);
+        _;
+    }
+
+    // if user is whitelisted to create account
+    modifier isWhitelisted() {
+        require(blockvitae.whitelist(msg.sender) || blockvitae.allWhitelisted());
+        _;
     }
 
     // @description
@@ -34,18 +58,8 @@ contract BlockvitaeInsert is Blockvitae {
     //
     // @param address _owner
     // address of the new owner 
-    function setOwner(address _owner) public isOwner {
-        owner = _owner;
-    }
-
-    // @description
-    // If Blockvitae is updated then the new Blockvitae contract
-    // can be the owner of the DB contract to access old data
-    //
-    // @param address _owner
-    // address of the new owner 
-    function setDBOwner(address _owner) public isOwner {
-        dbInsert.setOwner(_owner);
+    function setOwnerBlockvitae(address _owner) public isOwner(msg.sender) {
+       blockvitae.setOwner(_owner, msg.sender);
     }
 
     // @description
@@ -53,8 +67,8 @@ contract BlockvitaeInsert is Blockvitae {
     //
     // @param address _user
     // address of the user
-    function addToWhitelist(address _user) public isOwner {
-        whitelist[_user] = true;
+    function addToWhitelist(address _user) public isOwner(msg.sender) {
+        blockvitae.addToWhiteList(_user, msg.sender);
     }
 
     // @description
@@ -62,14 +76,14 @@ contract BlockvitaeInsert is Blockvitae {
     //
     // @param address _user
     // address of the user
-    function removeFromWhitelist(address _user) public isOwner {
-        whitelist[_user] = false;
+    function removeFromWhitelist(address _user) public isOwner(msg.sender) {
+        blockvitae.removeFromWhiteList(_user, msg.sender);
     }
 
     // @description
     // anyone can create account
-    function setAllWhitelisted() public isOwner {
-        allWhitelisted = true;
+    function setAllWhitelisted() public isOwner(msg.sender) {
+        blockvitae.setAllWhitelist(msg.sender);
     }
 
     // @description
@@ -78,7 +92,7 @@ contract BlockvitaeInsert is Blockvitae {
     // @param string _fullName 
     // full name of the user
     //
-    // @param string _userName 
+    // @param bytes32 _userName 
     // username of the user
     //
     // @param string _imgUrl 
@@ -94,7 +108,7 @@ contract BlockvitaeInsert is Blockvitae {
     // One line descriprion of the user
     function createUserDetail(
         string _fullName,
-        string _userName,
+        bytes32 _userName,
         string _imgUrl,
         string _email,
         string _location,
@@ -122,7 +136,7 @@ contract BlockvitaeInsert is Blockvitae {
     // @param string _fullName 
     // full name of the user
     //
-    // @param string _userName 
+    // @param bytes32 _userName 
     // username of the user
     //
     // @param string _imgUrl 
@@ -138,7 +152,7 @@ contract BlockvitaeInsert is Blockvitae {
     // One line descriprion of the user
     function updateUserDetail(
         string _fullName,
-        string _userName,
+        bytes32 _userName,
         string _imgUrl,
         string _email,
         string _location,
@@ -336,8 +350,8 @@ contract BlockvitaeInsert is Blockvitae {
     function createUserSkill(bytes32[] _skills) 
     public 
     addressNotZero 
-    userExists 
-    isWhitelisted{
+    userExists
+    isWhitelisted {
         // insert into DB
         dbInsert.insertUserSkill(User.setUserSkill(_skills), msg.sender);
     }
@@ -349,7 +363,7 @@ contract BlockvitaeInsert is Blockvitae {
     // introduction of the user
     function createUserIntroduction(string _introduction) 
     public 
-    addressNotZero 
+    addressNotZero
     userExists
     isWhitelisted {
         // insert into DB
