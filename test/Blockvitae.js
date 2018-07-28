@@ -5,15 +5,24 @@
 
 // import contract
 let BlockvitaeContract = artifacts.require("./Blockvitae.sol");
+let BlockvitaeGetterContract = artifacts.require("./BlockvitaeGetter.sol");
+let BlockvitaeInsertContract = artifacts.require("./BlockvitaeInsert.sol");
+let BlockvitaeDeleteContract = artifacts.require("./BlockvitaeDelete.sol");
 
 contract("Blockvitae", (accounts) => {
 
     // global variables
     let blockvitae = '';
+    let blockvitaeInsert = '';
+    let blockvitaeDelete = '';
+    let blockvitaeGetter = '';
 
     // run beforeEach before each "it" call
     beforeEach(async () => {
         blockvitae = await BlockvitaeContract.deployed();
+        blockvitaeInsert = await BlockvitaeInsertContract.deployed();
+        blockvitaeDelete = await BlockvitaeDeleteContract.deployed();
+        blockvitaeGetter = await BlockvitaeGetterContract.deployed();
     });
 
     // check if the contract is successfully deployed
@@ -26,9 +35,15 @@ contract("Blockvitae", (accounts) => {
     // check for totalUsers
     it("totalUser before user creation", async () => {
         // get total users
-        let totalUsers = await blockvitae.getTotalUsers();
+        let totalUsers = await blockvitaeGetter.getTotalUsers();
 
         assert.strictEqual(totalUsers.toNumber(), 0);
+    })
+
+    // whitelist user
+    it("user whitelisted", async () => {
+        // whitelist user
+        await blockvitaeInsert.addToWhitelist(accounts[0]);
     })
 
     // check if user gets created
@@ -41,13 +56,12 @@ contract("Blockvitae", (accounts) => {
         let location = "Boston, MA";
         let description = "Full Stack Developer";
 
-        // whitelist user
-        await blockvitae.addToWhitelist(accounts[0]);
+        
 
         // save in contract
-        await blockvitae.createUserDetail(
+        await blockvitaeInsert.createUserDetail(
             fullName,
-            userName,
+            web3.fromAscii(userName),
             imgUrl,
             email,
             location,
@@ -56,9 +70,9 @@ contract("Blockvitae", (accounts) => {
 
         // try creating new account with same address
         try {
-            await blockvitae.createUserDetail(
+            await blockvitaeInsert.createUserDetail(
                 fullName,
-                userName,
+                web3.fromAscii(userName),
                 imgUrl,
                 email,
                 location,
@@ -71,21 +85,21 @@ contract("Blockvitae", (accounts) => {
         }
 
         // get the values
-        let personal = await blockvitae.getUserDetail(accounts[0]);
-
+        let personal = await blockvitaeGetter.getUserDetail(accounts[0]);
+        
         // assert statements
-        assert(fullName, personal[0]);
-        assert(userName, personal[1]);
-        assert(imgUrl, personal[2]);
-        assert(email, personal[3]);
-        assert(location, personal[4]);
-        assert(description, personal[5]);
+        assert.strictEqual(fullName, personal[0]);
+        assert.strictEqual(userName, web3.toUtf8(personal[1]));
+        assert.strictEqual(imgUrl, personal[2]);
+        assert.strictEqual(email, personal[3]);
+        assert.strictEqual(location, personal[4]);
+        assert.strictEqual(description, personal[5]);
     });
 
     // check for totalUsers
     it("totalUser updated successfully", async () => {
         // get total users
-        let totalUsers = await blockvitae.getTotalUsers();
+        let totalUsers = await blockvitaeGetter.getTotalUsers();
 
         assert.strictEqual(totalUsers.toNumber(), 1);
     })
@@ -96,12 +110,16 @@ contract("Blockvitae", (accounts) => {
         let oldOwner = await blockvitae.owner();
 
         // change owner
-        await blockvitae.setOwner(accounts[1]);
+        await blockvitaeInsert.setOwnerBlockvitae(accounts[1]);
 
         let newOwner = await blockvitae.owner();
 
-        assert(oldOwner, accounts[0]);
-        assert(newOwner, accounts[1]);
+        // back to old owner
+        await blockvitaeInsert.setOwnerBlockvitae(accounts[0], {from: accounts[1]});
+
+        assert.strictEqual(oldOwner, accounts[0]);
+        assert.strictEqual(newOwner, accounts[1]);
+        assert.strictEqual(newOwner, accounts[1]);
     });
 
     // check for user social 
@@ -116,7 +134,7 @@ contract("Blockvitae", (accounts) => {
         let mediumUrl = "https://medium.com/@johndoe";
 
         // create userSocial
-        await blockvitae.createUserSocial(
+        await blockvitaeInsert.createUserSocial(
             websiteUrl,
             twitterUrl,
             fbUrl,
@@ -128,17 +146,17 @@ contract("Blockvitae", (accounts) => {
         );
 
         // get values
-        let social = await blockvitae.getUserSocial(accounts[0]);
-
+        let social = await blockvitaeGetter.getUserSocial(accounts[0]);
+    
         // assert statements
-        assert(websiteUrl, social[0]);
-        assert(twitterUrl, social[1]);
-        assert(fbUrl, social[2]);
-        assert(githubUrl, social[3]);
+        assert.strictEqual(websiteUrl, social[0]);
+        assert.strictEqual(twitterUrl, social[1]);
+        assert.strictEqual(fbUrl, social[2]);
+        assert.strictEqual(githubUrl, social[3]);
         assert.lengthOf(dribbbleUrl, social[4].length);
-        assert(linkedUrl, social[5]);
+        assert.strictEqual(linkedUrl, social[5]);
         assert.lengthOf(behanceUrl, social[6].length);
-        assert(mediumUrl, social[7]);
+        assert.strictEqual(mediumUrl, social[7]);
     });
 
     // check for user projects
@@ -152,26 +170,26 @@ contract("Blockvitae", (accounts) => {
         let deleted = [true, false];
 
         // create project 1
-        await blockvitae.createUserProject(name[0], shortDescription[0],
+        await blockvitaeInsert.createUserProject(name[0], shortDescription[0],
             description[0], url[0], deleted[0]);
 
         // create project 2
-        await blockvitae.createUserProject(name[1], shortDescription[1],
+        await blockvitaeInsert.createUserProject(name[1], shortDescription[1],
             description[1], url[1], deleted[1]);
 
         // get projects count 
-        let count = await blockvitae.getProjectCount(accounts[0]);
+        let count = await blockvitaeGetter.getProjectCount(accounts[0]);
 
         // get project details for each project index
         for (let i = 0; i < count.toNumber(); i++) {
             // get project 1
-            let project = await blockvitae.getUserProject(accounts[0], i);
+            let project = await blockvitaeGetter.getUserProject(accounts[0], i);
 
             // assert statements
-            assert(name[i], project[0]);
-            assert(shortDescription[i], project[1]);
-            assert(description[i], project[2]);
-            assert(url[i], project[3]);
+            assert.strictEqual(name[i], project[0]);
+            assert.strictEqual(shortDescription[i], project[1]);
+            assert.strictEqual(description[i], project[2]);
+            assert.strictEqual(url[i], project[3]);
 
             if (i == 0)
                 assert.isTrue(project[4]);
@@ -183,12 +201,12 @@ contract("Blockvitae", (accounts) => {
     // project deleted
     it("project deleted successfully", async () => {
 
-        let projectBeforeDelete = await blockvitae.getUserProject(accounts[0], 1);
+        let projectBeforeDelete = await blockvitaeGetter.getUserProject(accounts[0], 1);
 
         // delete second project
-        await blockvitae.deleteUserProject(1);
+        await blockvitaeDelete.deleteUserProject(1);
 
-        let projectAfterDelete = await blockvitae.getUserProject(accounts[0], 1);
+        let projectAfterDelete = await blockvitaeGetter.getUserProject(accounts[0], 1);
 
         assert.isFalse(projectBeforeDelete[4]);
         assert.isTrue(projectAfterDelete[4]);
@@ -207,7 +225,7 @@ contract("Blockvitae", (accounts) => {
         let deleted = [true, false];
 
         // create exp 1
-        await blockvitae.createUserWorkExp(
+        await blockvitaeInsert.createUserWorkExp(
             company[0],
             position[0],
             dateStart[0],
@@ -218,7 +236,7 @@ contract("Blockvitae", (accounts) => {
         );
 
         // create exp 2
-        await blockvitae.createUserWorkExp(
+        await blockvitaeInsert.createUserWorkExp(
             company[1],
             position[1],
             dateStart[1],
@@ -229,23 +247,23 @@ contract("Blockvitae", (accounts) => {
         );
 
         // get work exp count 
-        let count = await blockvitae.getWorkExpCount(accounts[0]);
+        let count = await blockvitaeGetter.getWorkExpCount(accounts[0]);
 
         // get work exp details for each index
         for (let i = 0; i < count.toNumber(); i++) {
             // get project 1
-            let work = await blockvitae.getUserWorkExp(accounts[0], i);
+            let work = await blockvitaeGetter.getUserWorkExp(accounts[0], i);
 
             // assert statements
-            assert(company[i], work[0]);
-            assert(position[i], work[1]);
-            assert(dateStart[i], work[2]);
-            assert(description[i], work[4]);
+            assert.strictEqual(company[i], work[0]);
+            assert.strictEqual(position[i], work[1]);
+            assert.strictEqual(dateStart[i], work[2]);
+            assert.strictEqual(description[i], work[4]);
 
             if (i === 0) {
                 assert.isFalse(work[5]);
                 assert.isTrue(work[6]);
-                assert(dateEnd[i], work[3]);
+                assert.strictEqual(dateEnd[i], work[3]);
             }
             else {
                 assert.isTrue(work[5]);
@@ -256,12 +274,12 @@ contract("Blockvitae", (accounts) => {
 
     // delete work exp
     it("work experience deleted successfully", async () => {
-        let workExpBeforeDelete = await blockvitae.getUserWorkExp(accounts[0], 1);
+        let workExpBeforeDelete = await blockvitaeGetter.getUserWorkExp(accounts[0], 1);
 
         // delete work exp
-        await blockvitae.deleteUserWorkExp(1);
+        await blockvitaeDelete.deleteUserWorkExp(1);
 
-        let workExpAfterDelete = await blockvitae.getUserWorkExp(accounts[0], 1);
+        let workExpAfterDelete = await blockvitaeGetter.getUserWorkExp(accounts[0], 1);
 
         assert.isFalse(workExpBeforeDelete[6]);
         assert.isTrue(workExpAfterDelete[6]);
@@ -273,17 +291,17 @@ contract("Blockvitae", (accounts) => {
             "Leadership", "Truffle", "Go", "Java Spring Boot"];
 
         // insert skills
-        await blockvitae.createUserSkill(skills);
+        await blockvitaeInsert.createUserSkill(skills);
 
         // retrieve skills
-        let savedSkills = await blockvitae.getUserSkills(accounts[0]);
+        let savedSkills = await blockvitaeGetter.getUserSkills(accounts[0]);
 
         // convert bytes to Utf8
         savedSkills = savedSkills.map(skill => web3.toUtf8(skill));
 
         // assert statements
         for (let i = 0; i < savedSkills.length; i++) {
-            assert(skills[i], savedSkills[i]);
+            assert.strictEqual(skills[i], savedSkills[i]);
         }
     });
 
@@ -299,7 +317,7 @@ contract("Blockvitae", (accounts) => {
         let deleted = [false, true];
 
         // create edu 1
-        await blockvitae.createUserEducation(
+        await blockvitaeInsert.createUserEducation(
             organization[0],
             level[0],
             dateStart[0],
@@ -309,7 +327,7 @@ contract("Blockvitae", (accounts) => {
         );
 
         // create edu 2
-        await blockvitae.createUserEducation(
+        await blockvitaeInsert.createUserEducation(
             organization[1],
             level[1],
             dateStart[1],
@@ -319,19 +337,19 @@ contract("Blockvitae", (accounts) => {
         );
 
         // get edu count 
-        let count = await blockvitae.getEducationCount(accounts[0]);
+        let count = await blockvitaeGetter.getEducationCount(accounts[0]);
 
         // get edu details for each index
         for (let i = 0; i < count.toNumber(); i++) {
             // get project 1
-            let education = await blockvitae.getUserEducation(accounts[0], i);
+            let education = await blockvitaeGetter.getUserEducation(accounts[0], i);
 
             // assert statements
-            assert(organization[i], education[0]);
-            assert(level[i], education[1]);
-            assert(dateStart[i], education[2]);
-            assert(dateEnd[i], education[3]);
-            assert(description[i], education[4]);
+            assert.strictEqual(organization[i], education[0]);
+            assert.strictEqual(level[i], education[1]);
+            assert.strictEqual(dateStart[i], education[2]);
+            assert.strictEqual(dateEnd[i], education[3]);
+            assert.strictEqual(description[i], education[4]);
 
             if (i === 0)
                 assert.isFalse(education[5]);
@@ -342,12 +360,12 @@ contract("Blockvitae", (accounts) => {
 
     // delete education
     it("education deleted successfully", async () => {
-        let educationBeforeDelete = await blockvitae.getUserEducation(accounts[0], 0);
+        let educationBeforeDelete = await blockvitaeGetter.getUserEducation(accounts[0], 0);
 
         // delete education
-        await blockvitae.deleteUserEducation(0);
+        await blockvitaeDelete.deleteUserEducation(0);
 
-        let educationAfterDelete = await blockvitae.getUserEducation(accounts[0], 0);
+        let educationAfterDelete = await blockvitaeGetter.getUserEducation(accounts[0], 0);
 
         assert.isFalse(educationBeforeDelete[5]);
         assert.isTrue(educationAfterDelete[5]);
@@ -363,7 +381,7 @@ contract("Blockvitae", (accounts) => {
         let deleted = [false, true];
 
         // create publication 1
-        await blockvitae.createUserPublication(
+        await blockvitaeInsert.createUserPublication(
             title[0],
             url[0],
             description[0],
@@ -371,7 +389,7 @@ contract("Blockvitae", (accounts) => {
         );
 
         // create publication 2
-        await blockvitae.createUserPublication(
+        await blockvitaeInsert.createUserPublication(
             title[1],
             url[1],
             description[1],
@@ -379,17 +397,17 @@ contract("Blockvitae", (accounts) => {
         );
 
         // get edu count 
-        let count = await blockvitae.getPublicationCount(accounts[0]);
+        let count = await blockvitaeGetter.getPublicationCount(accounts[0]);
 
         // get edu details for each index
         for (let i = 0; i < count.toNumber(); i++) {
             // get publication 1
-            let publication = await blockvitae.getUserPublication(accounts[0], i);
+            let publication = await blockvitaeGetter.getUserPublication(accounts[0], i);
 
             // assert statements
-            assert(title[i], publication[0]);
-            assert(url[i], publication[1]);
-            assert(description[i], publication[2]);
+            assert.strictEqual(title[i], publication[0]);
+            assert.strictEqual(url[i], publication[1]);
+            assert.strictEqual(description[i], publication[2]);
 
             if (i === 0)
                 assert.isFalse(publication[3]);
@@ -400,12 +418,12 @@ contract("Blockvitae", (accounts) => {
 
     // delete publication
     it("publication deleted successfully", async () => {
-        let publicationBeforeDelete = await blockvitae.getUserPublication(accounts[0], 0);
+        let publicationBeforeDelete = await blockvitaeGetter.getUserPublication(accounts[0], 0);
 
         // delete publication
-        await blockvitae.deleteUserPublication(0);
+        await blockvitaeDelete.deleteUserPublication(0);
 
-        let publicationAfterDelete = await blockvitae.getUserPublication(accounts[0], 0);
+        let publicationAfterDelete = await blockvitaeGetter.getUserPublication(accounts[0], 0);
 
         assert.isFalse(publicationBeforeDelete[3]);
         assert.isTrue(publicationAfterDelete[3]);
@@ -422,15 +440,15 @@ contract("Blockvitae", (accounts) => {
         let description = "Full Stack Developer";
 
         // get the values
-        let personalOld = await blockvitae.getUserDetail(accounts[0]);
+        let personalOld = await blockvitaeGetter.getUserDetail(accounts[0]);
 
         // assert statements
-        assert(userName, personalOld[1]);
+        assert.strictEqual("JDoe", web3.toUtf8(personalOld[1]));
 
         // save in contract
-        await blockvitae.updateUserDetail(
+        await blockvitaeInsert.updateUserDetail(
             fullName,
-            userName,
+            web3.fromAscii(userName),
             imgUrl,
             email,
             location,
@@ -438,10 +456,10 @@ contract("Blockvitae", (accounts) => {
         );
 
         // get the values
-        let personal = await blockvitae.getUserDetail(accounts[0]);
+        let personal = await blockvitaeGetter.getUserDetail(accounts[0]);
 
         // assert statements
-        assert(userName, personal[1]);
+        assert.strictEqual(userName, web3.toUtf8(personal[1]));
     });
 
     // get address for given userName
@@ -449,9 +467,9 @@ contract("Blockvitae", (accounts) => {
         let userName = "JDoe001";
 
         // get address from userName
-        let addr = await blockvitae.getAddrForUserName(userName);
+        let addr = await blockvitaeGetter.getAddrForUserName(web3.fromAscii(userName));
 
-        assert(addr, accounts[0]);
+        assert.strictEqual(addr, accounts[0]);
     });
 
     // check if username exits
@@ -460,8 +478,8 @@ contract("Blockvitae", (accounts) => {
         let userName2 = "JDoe002";
 
         // check if username exists
-        let exists = await blockvitae.isUsernameAvailable(userName);
-        let exists2 = await blockvitae.isUsernameAvailable(userName2);
+        let exists = await blockvitaeGetter.isUsernameAvailable(userName);
+        let exists2 = await blockvitaeGetter.isUsernameAvailable(userName2);
 
         assert.isFalse(exists);
         assert.isTrue(exists2);
@@ -472,11 +490,11 @@ contract("Blockvitae", (accounts) => {
         let introduction = "This is Blockvitae";
 
         // Insert to Blockchain
-        await blockvitae.createUserIntroduction(introduction);
+        await blockvitaeInsert.createUserIntroduction(introduction);
 
         // check introduction
-        let intro = await blockvitae.getUserIntroduction(accounts[0]);
+        let intro = await blockvitaeGetter.getUserIntroduction(accounts[0]);
 
-        assert(introduction, intro);
+        assert.strictEqual(introduction, intro);
     });
 });
