@@ -13,35 +13,19 @@ pragma experimental ABIEncoderV2; // experimental
 // imports
 import "./DB.sol";
 
-contract DBDelete is DB {
+contract DBDelete {
 
-    // address of the owner of the contract
-    address public owner;
+  DB private db;
 
-    constructor() public {
-        // initially make this contract its own owner
-        // This will be invalid once Blockvitae gets deployed
-        // as it will become the owner of this contract
-        owner = address(this);
-    }
+  constructor(DB _db) public {
+      db = _db;
+  }
 
-    // check for the owner
-    // owner == address(this) will get
-    // invalid after Blockvitae becomes owner of
-    // this contract
-    modifier isOwner() {
-        require(owner == msg.sender || owner == address(this));
-        _;
-    }
+  modifier isOwner(address _sender) {
+      require(db.isOwnerDB(_sender));
+      _;
+  }
     
-    // @description
-    // updates the current owner
-    //
-    // @param address _blockvitae
-    // address of the Blockvitae contract
-    function setOwner(address _blockvitae) public isOwner{
-        owner = _blockvitae;
-    }
 
   // @description
   // deletes the education for the given index and address
@@ -51,9 +35,9 @@ contract DBDelete is DB {
   //
   // @param address _user
   // address of the user whose education is to be deleted
-  function deleteEducation(uint _index, address _user) public isOwner {
-      require(!users[_user].education[_index].isDeleted);
-      users[_user].education[_index].isDeleted = true;
+  function deleteEducation(uint _index, address _user) public isOwner(msg.sender) {
+      require(!db.getUserEducation(_user, msg.sender)[_index].isDeleted);
+      db.deleteUserEducation(_index, _user, msg.sender);
   }
 
   // @description
@@ -64,9 +48,9 @@ contract DBDelete is DB {
   //
   // @param address _user
   // address of the user whose publication is to be deleted
-  function deletePublication(uint _index, address _user) public isOwner {
-      require(!users[_user].publications[_index].isDeleted);
-      users[_user].publications[_index].isDeleted = true;
+  function deletePublication(uint _index, address _user) public isOwner(msg.sender) {
+      require(!db.getUserPublication(_user, msg.sender)[_index].isDeleted);
+      db.deleteUserPublication(_index, _user, msg.sender);
   }
 
   // @description
@@ -77,9 +61,9 @@ contract DBDelete is DB {
   //
   // @param address _user
   // address of the user whose project is to be deleted
-  function deleteProject(uint _index, address _user) public isOwner {
-      require(!users[_user].projects[_index].isDeleted);
-      users[_user].projects[_index].isDeleted = true;
+  function deleteProject(uint _index, address _user) public isOwner(msg.sender) {
+      require(!db.getUserProject(_user, msg.sender)[_index].isDeleted);
+      db.deleteUserProject(_index, _user, msg.sender);
   }
 
   // @description
@@ -90,8 +74,8 @@ contract DBDelete is DB {
   //
   // @param address _user
   // address of the user whose project is to be deleted
-  function deleteWorkExp(uint _index, address _user) public isOwner {
-      require(!users[_user].work[_index].isDeleted);
-      users[_user].work[_index].isDeleted = true;
+  function deleteWorkExp(uint _index, address _user) public isOwner(msg.sender) {
+      require(!db.getUserWorkExp(_user, msg.sender)[_index].isDeleted);
+      db.deleteUserWorkExp(_index, _user, msg.sender);
   }
 }
