@@ -11,10 +11,16 @@ pragma experimental ABIEncoderV2; // experimental
 
 // imports
 import "./Blockvitae.sol";
+import "./DBGetter.sol";
+import "./DB.sol";
 
 contract BlockvitaeGetter is Blockvitae {
 
 	Blockvitae private blockvitae;
+
+	DBGetter private dbGetter;
+
+	DB private db;
 
 	// @Reference: 
 	// http://solidity.readthedocs.io/en/latest/contracts.html#arguments-for-base-constructors
@@ -26,6 +32,8 @@ contract BlockvitaeGetter is Blockvitae {
 		// All calls to DB contract should pass through this
 		// contract
 		_db.setOwner(address(this));
+		db = _db;
+		dbGetter = _dbGetter;
 		blockvitae = _blockvitae;
 	}
 
