@@ -72,7 +72,7 @@ contract DBInsert{
         else {
             // existing userName is same as the one sent in the request
             if (keccak256(abi.encodePacked(db.getUserDetail(_user, msg.sender).userName))
-                    == keccak256(abi.encodePacked(_personal.userName, msg.sender))) {
+                    == keccak256(abi.encodePacked(_personal.userName))) {
                 // update personal details
                 db.setUserDetail(_personal, _user, msg.sender);
 

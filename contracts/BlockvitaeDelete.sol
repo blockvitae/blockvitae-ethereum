@@ -11,10 +11,13 @@ pragma experimental ABIEncoderV2; // experimental
 
 // imports
 import "./Blockvitae.sol";
+import "./DBDelete.sol";
 
 contract BlockvitaeDelete is Blockvitae {
 
     Blockvitae blockvitae;
+
+    DBDelete private dbDelete;
 
     // @Reference: 
     // http://solidity.readthedocs.io/en/latest/contracts.html#arguments-for-base-constructors
@@ -26,6 +29,7 @@ contract BlockvitaeDelete is Blockvitae {
       // All calls to DB contract should pass through this
       // contract
       _db.setOwner(address(this));
+      dbDelete = _dbDelete;
       blockvitae = _blockvitae;
     }
 

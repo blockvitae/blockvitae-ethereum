@@ -11,6 +11,7 @@ pragma experimental ABIEncoderV2; // experimental
 
 // imports
 import "./Blockvitae.sol";
+import "./DB.sol";
 
 // @title Blockvitae for CV
 contract BlockvitaeInsert is Blockvitae {
