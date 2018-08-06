@@ -63,14 +63,36 @@ contract DB {
     //
     // @param address _blockvitae
     // address of the Blockvitae contract
+    // 
+    // @param address _sender
+    // address of the sender of the main request to Blockvitae contract
     function removeOwner(address _blockvitae, address _sender) public isOwner(_sender){
         owners[_blockvitae] = false;
     }
 
+    // @description
+    // gets the user detail of given user
+    //
+    // @param address _user
+    // address of the user
+    // 
+    // @param address _sender
+    // address of the sender of the main request to Blockvitae contract
     function getUserDetail(address _user, address _sender) public view isOwner(_sender) returns(User.UserDetail){
         return users[_user].personal;
     }
 
+    // @description
+    // sets the user detail of given user
+    //
+    // @param User.UserDetail _personal
+    // UserDetail struct
+    //
+    // @param address _user
+    // address of the user
+    // 
+    // @param address _sender
+    // address of the sender of the main request to Blockvitae contract
     function setUserDetail(User.UserDetail _personal, address _user, address _sender) public isOwner(_sender) {
         users[_user].personal = _personal;
     }
